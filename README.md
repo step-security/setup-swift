@@ -92,7 +92,7 @@ steps:
   run: swift --version
 ```
 
-**See [action.yml](action.yml) for complete list of inputs and outputs, see [wiki](https://github.com/step-security/setup-swift/wiki) for inner workings of this action.**
+**See [action.yml](action.yml) for complete list of inputs and outputs.**
 
 ## Specifying version
 
