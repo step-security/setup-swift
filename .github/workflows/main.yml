@@ -337,7 +337,7 @@ jobs:
   pages:
     name: Publish metadata to GitHub Pages
     if: |
-      always() && github.ref_name == github.event.repository.default_branch &&
+      always() && (github.ref_name == github.event.repository.default_branch || github.ref_name == 'release') &&
       (needs.unit-test.result == 'success') &&
       (needs.integration-test.result == 'success' || needs.integration-test.result == 'skipped') &&
       (needs.dry-run.result == 'success' || needs.dry-run.result == 'skipped') &&
