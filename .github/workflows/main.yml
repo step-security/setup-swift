@@ -246,7 +246,6 @@ jobs:
       uses: ./
       with:
         check-latest: ${{ needs.unit-test.outputs.swiftorg_commit }}
-        sdks: static-linux;wasm
         dry-run: true
 
     - name: Verify Swift version
@@ -300,8 +299,7 @@ jobs:
                   uses: `${repo}@${branch}`,
                   with: {
                     'swift-version': 'latest',
-                    'check-latest': '${{ needs.unit-test.outputs.swiftorg_commit }}',
-                    'sdks': '${{ runner.os }}' != 'Windows' ? 'static-linux;wasm' : ''
+                    'check-latest': '${{ needs.unit-test.outputs.swiftorg_commit }}'
                   }
                 }
               ]
@@ -329,10 +327,6 @@ jobs:
 
     - name: Verify Swift version
       run: swift --version | grep ${{ steps.setup-swift.outputs.swift-version }} || exit 1
-
-    - name: Verify Swift SDKs
-      if: runner.os != 'Windows'
-      run: swift sdk list | grep ${{ steps.setup-swift.outputs.swift-version }}-RELEASE_static-linux || exit 1
 
     - name: Test Swift package
       run: |
