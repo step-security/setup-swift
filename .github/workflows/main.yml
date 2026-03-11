@@ -351,7 +351,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.repository.default_branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -386,6 +386,6 @@ jobs:
           add-paths: metadata.json
           commit-message: Update metadata.json
           branch: update-metadata
-          base: ${{ github.ref_name }}
+          base: ${{ github.event.repository.default_branch }}
           title: Update metadata.json
           body: Automated update of swift.org metadata.
