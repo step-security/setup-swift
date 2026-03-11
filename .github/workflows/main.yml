@@ -10,6 +10,8 @@ jobs:
   unit-test:
     name: Run unit tests
     runs-on: ubuntu-latest
+    outputs:
+      swiftorg_commit: ${{ steps.swiftorg.outputs.commit }}
     concurrency:
       group: unit-test-${{ github.ref }}
       cancel-in-progress: true
@@ -32,7 +34,10 @@ jobs:
         path: node_modules
 
     - name: Clone swift-org-website
-      run: git clone --depth=1 https://github.com/apple/swift-org-website.git swiftorg
+      id: swiftorg
+      run: |
+        git clone --depth=1 https://github.com/apple/swift-org-website.git swiftorg
+        echo "commit=$(git -C swiftorg rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
     - name: Setup and Run unit tests
       run: |
@@ -43,12 +48,13 @@ jobs:
   integration-test:
     name: Integrate Swift ${{ matrix.swift }} on ${{ matrix.os }} with development ${{ matrix.development }}, VS linker ${{ matrix.vs-link }}, latest modules ${{ matrix.latest-modules }}
     if: github.event_name != 'push'
+    needs: unit-test
     runs-on: ${{ matrix.os }}
     concurrency:
       group: integration-test-${{ github.ref }}-${{ matrix.os }}-${{ matrix.swift }}-${{ matrix.development }}-${{ matrix.vs-link }}-${{ matrix.latest-modules }}
       cancel-in-progress: true
     env:
-      SETUPSWIFT_SWIFTORG_METADATA: '{"commit":"HEAD"}'
+      SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
     strategy:
       matrix:
         os: ${{ github.actor == 'dependabot[bot]' && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest", "macos-latest", "windows-latest"]') }}
@@ -126,7 +132,7 @@ jobs:
       with:
         swift-version: ${{ matrix.swift }}
         development: ${{ matrix.development }}
-        check-latest: true
+        check-latest: ${{ needs.unit-test.outputs.swiftorg_commit }}
         cache-snapshot: ${{ !matrix.development }}
         prefer-oss-toolchain: ${{ matrix.sdk != '' }}
         prefer-visual-studio-linker: ${{ runner.os == 'Windows' && matrix.vs-link }}
@@ -205,13 +211,14 @@ jobs:
   dry-run:
     name: Check action with dry run
     if: github.event_name != 'push'
+    needs: unit-test
     runs-on: ubuntu-latest
     continue-on-error: true
     concurrency:
       group: dry-run-${{ github.ref }}
       cancel-in-progress: true
     env:
-      SETUPSWIFT_SWIFTORG_METADATA: '{"commit":"HEAD"}'
+      SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
 
     steps:
     - name: Checkout repository
@@ -238,7 +245,8 @@ jobs:
       id: setup-swift
       uses: ./
       with:
-        check-latest: true
+        check-latest: ${{ needs.unit-test.outputs.swiftorg_commit }}
+        sdks: static-linux;wasm
         dry-run: true
 
     - name: Verify Swift version
@@ -250,6 +258,7 @@ jobs:
   e2e-test:
     name: End-to-end test latest Swift on ${{ matrix.os }}
     if: github.event_name != 'push'
+    needs: unit-test
     runs-on: ${{ matrix.os }}
     concurrency:
       group: e2e-test-${{ github.ref }}-${{ matrix.os }}
@@ -291,7 +300,8 @@ jobs:
                   uses: `${repo}@${branch}`,
                   with: {
                     'swift-version': 'latest',
-                    'check-latest': 'true'
+                    'check-latest': '${{ needs.unit-test.outputs.swiftorg_commit }}',
+                    'sdks': '${{ runner.os }}' != 'Windows' ? 'static-linux;wasm' : ''
                   }
                 }
               ]
@@ -320,8 +330,80 @@ jobs:
     - name: Verify Swift version
       run: swift --version | grep ${{ steps.setup-swift.outputs.swift-version }} || exit 1
 
+    - name: Verify Swift SDKs
+      if: runner.os != 'Windows'
+      run: swift sdk list | grep ${{ steps.setup-swift.outputs.swift-version }}-RELEASE_static-linux || exit 1
+
     - name: Test Swift package
       run: |
         swift package init --type library --name SetupLib
         swift build --build-tests
         swift test
+
+  pages:
+    name: Publish metadata to GitHub Pages
+    if: |
+      always() && github.ref_name == github.event.repository.default_branch &&
+      (needs.unit-test.result == 'success') &&
+      (needs.integration-test.result == 'success' || needs.integration-test.result == 'skipped') &&
+      (needs.dry-run.result == 'success' || needs.dry-run.result == 'skipped') &&
+      (needs.e2e-test.result == 'success' || needs.e2e-test.result == 'skipped')
+    needs: [unit-test, integration-test, dry-run, e2e-test]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages-update
+      cancel-in-progress: true
+    permissions:
+      id-token: write
+      pages: write
+    runs-on: ubuntu-latest
+    env:
+      SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: npm
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          key: node-${{ github.ref }}
+          path: node_modules
+
+      - name: Clone swift-org-website at tested commit
+        run: |
+          git init swiftorg
+          git -C swiftorg fetch https://github.com/apple/swift-org-website.git ${{ needs.unit-test.outputs.swiftorg_commit }} --depth=1 --no-tags
+          git -C swiftorg checkout FETCH_HEAD --detach
+
+      - name: Setup npm packages
+        run: npm install --legacy-peer-deps
+
+      - name: Generate swift.org metadata
+        id: swiftorg-metadata
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const hook = require('.github/utils/update_metadata.js');
+            await hook.update();
+            return true;
+
+      - name: Upload artifact
+        if: steps.swiftorg-metadata.outputs.result == 'true'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: pages
+
+      - name: Deploy to GitHub Pages
+        if: steps.swiftorg-metadata.outputs.result == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
