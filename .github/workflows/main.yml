@@ -44,7 +44,7 @@ jobs:
         npm install --legacy-peer-deps
         npm run lint
         npm run test
-
+  
   integration-test:
     name: Integrate Swift ${{ matrix.swift }} on ${{ matrix.os }} with development ${{ matrix.development }}, VS linker ${{ matrix.vs-link }}, latest modules ${{ matrix.latest-modules }}
     if: github.event_name != 'push'
@@ -334,28 +334,22 @@ jobs:
         swift build --build-tests
         swift test
 
-  pages:
-    name: Publish metadata to GitHub Pages
-    if: always()
+  update-metadata:
+    name: Update metadata.json
+    if: github.event_name == 'push'
     needs: [unit-test]
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     concurrency:
-      group: pages-update
+      group: update-metadata
       cancel-in-progress: true
     permissions:
-      id-token: write
-      pages: write
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     env:
       SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -378,21 +372,17 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Generate swift.org metadata
-        id: swiftorg-metadata
         uses: actions/github-script@v8
         with:
           script: |
             const hook = require('.github/utils/update_metadata.js');
             await hook.update();
-            return true;
 
-      - name: Upload artifact
-        if: steps.swiftorg-metadata.outputs.result == 'true'
-        uses: actions/upload-pages-artifact@v4
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
         with:
-          path: pages
-
-      - name: Deploy to GitHub Pages
-        if: steps.swiftorg-metadata.outputs.result == 'true'
-        id: deployment
-        uses: actions/deploy-pages@v4
+          add-paths: metadata.json
+          commit-message: Update metadata.json
+          branch: update-metadata
+          title: Update metadata.json
+          body: Automated update of swift.org metadata.

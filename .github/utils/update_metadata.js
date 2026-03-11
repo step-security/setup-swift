@@ -5,7 +5,6 @@ const core = require('@actions/core');
 const {exec,getExecOutput} = require('@actions/exec');
 const yaml = require('js-yaml');
 const semver = require('semver');
-const https = require('https');
 
 const SWIFT_ORG = 'swiftorg';
 const SWIFT_ORG_BUILD = path.join(SWIFT_ORG, '_data', 'builds');
@@ -59,52 +58,17 @@ exports.update = async () => {
   const swiftorg = { commit: commit, release: release, dev: dev, snapshot: snapshot };
   const data = JSON.stringify(swiftorg);
   core.info(`Updating swiftorg metadata to "${data}"`);
-  const metadata = path.join('pages', 'metadata.json');
-  await fs.mkdir(path.dirname(metadata), {recursive: true});
+  const metadata = 'metadata.json';
   await fs.writeFile(metadata, data, 'utf-8');
   return data;
 };
 
 exports.currentData = async () => {
-  return new Promise((resolve, reject) => {
-    https.get(
-      'https://step-security.github.io/setup-swift/metadata.json',
-      res => {
-        const {statusCode} = res
-        const contentType = res.headers['content-type']
-
-        let error
-        if (statusCode !== 200) {
-          error = new Error(`Request Failed Status Code: '${statusCode}'`)
-        } else if (!contentType?.startsWith('application/json')) {
-          error = new Error(`Invalid content-type: ${contentType}`)
-        }
-
-        if (error) {
-          core.error(error.message)
-          res.resume()
-          reject(error)
-          return
-        }
-
-        let rawData = ''
-        res.setEncoding('utf8')
-        res.on('data', chunk => {
-          rawData += chunk
-        })
-        res.on('end', () => {
-          try {
-            const parsedData = JSON.parse(rawData)
-            core.debug(`Recieved swift.org metadata: "${rawData}"`)
-            resolve(parsedData)
-          } catch (e) {
-            core.error(`Parsing swift.org metadata error: '${e}'`)
-            reject(e)
-          }
-        })
-      }
-    )
-  })
+  const metadata = 'metadata.json';
+  const rawData = await fs.readFile(metadata, 'utf-8');
+  const parsedData = JSON.parse(rawData);
+  core.debug(`Read swift.org metadata: "${rawData}"`);
+  return parsedData;
 }
 
 exports.fetch = async () => {

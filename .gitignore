@@ -149,8 +149,5 @@ out
 .yarn/install-state.gz
 .pnp.*
 
-# Github Pages
-pages
-
 # swift.org
 swiftorg

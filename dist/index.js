@@ -44,7 +44,7 @@ exports.SWIFTORG_METADATA = exports.SWIFTORG_ORIGIN = exports.MODULE_DIR = void 
 const path = __importStar(__nccwpck_require__(16928));
 exports.MODULE_DIR = path.dirname(__dirname);
 exports.SWIFTORG_ORIGIN = 'https://github.com/apple/swift-org-website.git';
-exports.SWIFTORG_METADATA = 'https://swiftylab.github.io/setup-swift/metadata.json';
+exports.SWIFTORG_METADATA = path.join(exports.MODULE_DIR, 'metadata.json');
 
 
 /***/ }),
@@ -1383,7 +1383,7 @@ const github = __importStar(__nccwpck_require__(93228));
 const axios_1 = __importStar(__nccwpck_require__(87269));
 async function validateSubscription() {
     const repoPrivate = github.context?.payload?.repository?.private;
-    const upstream = 'gitleaks/gitleaks-action';
+    const upstream = 'SwiftyLab/setup-swift';
     const action = process.env.GITHUB_ACTION_REPOSITORY;
     const docsUrl = 'https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions';
     core.info('');
@@ -2200,10 +2200,10 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Swiftorg = exports.SWIFTORG = void 0;
 const path = __importStar(__nccwpck_require__(16928));
+const fs = __importStar(__nccwpck_require__(79896));
 const core = __importStar(__nccwpck_require__(37484));
 const exec_1 = __nccwpck_require__(95236);
 const const_1 = __nccwpck_require__(76575);
-const https = __importStar(__nccwpck_require__(65692));
 exports.SWIFTORG = 'swiftorg';
 class Swiftorg {
     checkLatest;
@@ -2235,41 +2235,10 @@ class Swiftorg {
                 return metadata;
             }
         }
-        return new Promise((resolve, reject) => {
-            https.get(const_1.SWIFTORG_METADATA, res => {
-                const { statusCode } = res;
-                const contentType = res.headers['content-type'];
-                let error;
-                if (statusCode !== 200) {
-                    error = new Error(`Request Failed Status Code: '${statusCode}'`);
-                }
-                else if (!contentType?.startsWith('application/json')) {
-                    error = new Error(`Invalid content-type: '${contentType}'`);
-                }
-                if (error) {
-                    core.error(error.message);
-                    res.resume();
-                    reject(error);
-                    return;
-                }
-                let rawData = '';
-                res.setEncoding('utf8');
-                res.on('data', chunk => {
-                    rawData += chunk;
-                });
-                res.on('end', () => {
-                    try {
-                        const parsedData = JSON.parse(rawData);
-                        core.debug(`Recieved swift.org metadata: "${rawData}"`);
-                        resolve(parsedData);
-                    }
-                    catch (e) {
-                        core.error(`Parsing swift.org metadata error: '${e}'`);
-                        reject(e);
-                    }
-                });
-            });
-        });
+        const rawData = fs.readFileSync(const_1.SWIFTORG_METADATA, 'utf8');
+        const parsedData = JSON.parse(rawData);
+        core.debug(`Read swift.org metadata: "${rawData}"`);
+        return parsedData;
     }
     async update() {
         let ref;
