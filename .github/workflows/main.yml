@@ -336,7 +336,7 @@ jobs:
 
   update-metadata:
     name: Update metadata.json
-    if: github.event_name == 'push'
+    #if: github.event_name == 'push'
     needs: [unit-test]
     concurrency:
       group: update-metadata
