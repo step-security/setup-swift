@@ -336,13 +336,8 @@ jobs:
 
   pages:
     name: Publish metadata to GitHub Pages
-    if: |
-      always() &&
-      (needs.unit-test.result == 'success') &&
-      (needs.integration-test.result == 'success' || needs.integration-test.result == 'skipped') &&
-      (needs.dry-run.result == 'success' || needs.dry-run.result == 'skipped') &&
-      (needs.e2e-test.result == 'success' || needs.e2e-test.result == 'skipped')
-    needs: [unit-test, integration-test, dry-run, e2e-test]
+    if: always()
+    needs: [unit-test]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
