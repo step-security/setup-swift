@@ -381,7 +381,7 @@ jobs:
             await hook.update();
 
       - name: Create Pull Request
-        uses: step-security/create-pull-request@v7
+        uses: step-security/create-pull-request@v8
         with:
           add-paths: metadata.json
           commit-message: Update metadata.json
