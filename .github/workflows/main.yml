@@ -384,7 +384,7 @@ jobs:
         uses: step-security/create-pull-request@v8
         with:
           add-paths: metadata.json
-          commit-message: Update metadata.json
+          commit-message: 'feat: Update metadata.json'
           branch: update-metadata
           base: ${{ github.event.repository.default_branch }}
           title: Update metadata.json
