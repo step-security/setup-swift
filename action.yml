@@ -1,0 +1,85 @@
+name: Setup Swift environment for macOS, Linux and Windows
+description: Setup Swift environment by optionally downloading and adding it to the PATH.
+author: step-security
+inputs:
+  swift-version:
+    description: >-
+      Swift version to configure, accepts valid semantic version, "latest", "current".
+      Configures latest version for open ended semantic version provided,
+      i.e. configures 5.1.1 for 5.1, configures 4.2.4 for 4.
+      Provide exact semantic version to configure the same version,
+      i.e. configures 5.1 for 5.1.0, configures 5.0 for 5.0.0.
+      Provide toolchain download URL to configure custom toolchains,
+      i.e. https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-ubuntu22.04_x86_64.tar.gz,
+      https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-macos_x86_64.pkg
+    required: false
+    default: 'latest'
+  development:
+    description: >-
+      Whether to include development snapshots matching provided version,
+      not required if provided version has no stable release.
+    required: false
+    default: 'false'
+  check-latest:
+    description: >-
+      Whether to use latest Swift toolchains available in swift.org,
+      instead of using the snapshot this action was tested with.
+      Enabling this option may break this action,
+      use cautiously and disable if any issue.
+      Specific git ref for apple/swift-org-website repo can be provided,
+      to use toolchains published in that ref.
+    required: false
+    default: 'false'
+  dry-run:
+    description: >-
+      Whether to only get the toolchain data based on version input and skip intallation.
+      Can be used with actions that perform custom installations, i.e. using docker tag in Linux.
+    required: false
+    default: 'false'
+  cache-snapshot:
+    description: >-
+      Whether to cache downloaded toolchain snapshots. Enabled by default,
+      can be disabled in case of storage constraints.
+    required: false
+    default: 'true'
+  visual-studio-components:
+    description: >-
+      Semi-colon separated list of components to include in the Visual Studio installation along with required ones.
+      i.e. Microsoft.VisualStudio.Component.VC.ATL;Microsoft.VisualStudio.Component.VC.CMake.Project;Microsoft.VisualStudio.Component.Windows10SDK
+    required: false
+    default: ''
+  prefer-oss-toolchain:
+    description: >-
+      Whether to prefer installing Swift open source toolchain over using Xcode integrated toolchain.
+      i.e. Enable this option for installing static SDK: https://www.swift.org/documentation/articles/static-linux-getting-started.html
+    required: false
+    default: 'false'
+  prefer-visual-studio-linker:
+    description: >-
+      Whether to prefer using the Visual Studio linker over the default linker. This is unsafe and not recommended to set.
+      If you are getting any linker errors with this option, try setting `update-sdk-modules` to `true`.
+    required: false
+    default: 'false'
+  update-sdk-modules:
+    description: >-
+      Update SDK module definitions to latest version after installation (Windows only).
+    required: false
+    default: 'false'
+    type: boolean
+  sdks:
+    description: >-
+      Semi-colon separated list of Swift SDKs to install along with the main toolchain.
+      Available SDKs are based on platforms available for the specified version.
+      Examples: "static-linux", "static-linux;wasm", "static-linux:0.0.1;wasm".
+    required: false
+    default: ''
+outputs:
+  swift-version:
+    description: The actual Swift version that was configured.
+  toolchain:
+    description: JSON formatted toolchain snapshot metadata that was configured.
+  sdks:
+    description: JSON formatted SDK snapshots metadata that were configured.
+runs:
+  using: node24
+  main: dist/index.js
