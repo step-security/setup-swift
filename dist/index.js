@@ -61441,6 +61441,9 @@ function _insertBefore(parent, node, child, _inDocumentAssertion) {
 	}
 	do{
 		newFirst.parentNode = parent;
+		// Update ownerDocument for each node being inserted
+		var targetDoc = parent.ownerDocument || parent;
+		_updateOwnerDocument(newFirst, targetDoc);
 	}while(newFirst !== newLast && (newFirst= newFirst.nextSibling))
 	_onUpdateChild(parent.ownerDocument||parent, parent);
 	//console.log(parent.lastChild.nextSibling == null)
@@ -61448,6 +61451,37 @@ function _insertBefore(parent, node, child, _inDocumentAssertion) {
 		node.firstChild = node.lastChild = null;
 	}
 	return node;
+}
+
+/**
+ * Recursively updates the ownerDocument property for a node and all its descendants
+ * @param {Node} node
+ * @param {Document} newOwnerDocument
+ * @private
+ */
+function _updateOwnerDocument(node, newOwnerDocument) {
+	if (node.ownerDocument === newOwnerDocument) {
+		return;
+	}
+	
+	node.ownerDocument = newOwnerDocument;
+	
+	// Update attributes if this is an element
+	if (node.nodeType === ELEMENT_NODE && node.attributes) {
+		for (var i = 0; i < node.attributes.length; i++) {
+			var attr = node.attributes.item(i);
+			if (attr) {
+				attr.ownerDocument = newOwnerDocument;
+			}
+		}
+	}
+	
+	// Recursively update child nodes
+	var child = node.firstChild;
+	while (child) {
+		_updateOwnerDocument(child, newOwnerDocument);
+		child = child.nextSibling;
+	}
 }
 
 /**
@@ -61475,6 +61509,11 @@ function _appendSingleChild (parentNode, newChild) {
 	}
 	parentNode.lastChild = newChild;
 	_onUpdateChild(parentNode.ownerDocument, parentNode, newChild);
+	
+	// Update ownerDocument for the new child and all its descendants
+	var targetDoc = parentNode.ownerDocument || parentNode;
+	_updateOwnerDocument(newChild, targetDoc);
+	
 	return newChild;
 }
 
@@ -61503,7 +61542,7 @@ Document.prototype = {
 			return newChild;
 		}
 		_insertBefore(this, newChild, refChild);
-		newChild.ownerDocument = this;
+		_updateOwnerDocument(newChild, this);
 		if (this.documentElement === null && newChild.nodeType === ELEMENT_NODE) {
 			this.documentElement = newChild;
 		}
@@ -61519,7 +61558,7 @@ Document.prototype = {
 	replaceChild: function (newChild, oldChild) {
 		//raises
 		_insertBefore(this, newChild, oldChild, assertPreReplacementValidityInDocument);
-		newChild.ownerDocument = this;
+		_updateOwnerDocument(newChild, this);
 		if (oldChild) {
 			this.removeChild(oldChild);
 		}
@@ -61619,7 +61658,22 @@ Document.prototype = {
 		node.appendData(data)
 		return node;
 	},
+	/**
+	 * Returns a new CDATASection node whose data is `data`.
+	 *
+	 * __This implementation differs from the specification:__
+	 * - calling this method on an HTML document does not throw `NotSupportedError`.
+	 *
+	 * @param {string} data
+	 * @returns {CDATASection}
+	 * @throws DOMException with code `INVALID_CHARACTER_ERR` if `data` contains `"]]>"`.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/createCDATASection
+	 * @see https://dom.spec.whatwg.org/#dom-document-createcdatasection
+	 */
 	createCDATASection :	function(data){
+		if (data.indexOf(']]>') !== -1) {
+			throw new DOMException(INVALID_CHARACTER_ERR, 'data contains "]]>"');
+		}
 		var node = new CDATASection();
 		node.ownerDocument = this;
 		node.appendData(data)
@@ -61888,6 +61942,20 @@ function ProcessingInstruction() {
 ProcessingInstruction.prototype.nodeType = PROCESSING_INSTRUCTION_NODE;
 _extends(ProcessingInstruction,Node);
 function XMLSerializer(){}
+/**
+ * Returns the result of serializing `node` to XML.
+ *
+ * __This implementation differs from the specification:__
+ * - CDATASection nodes whose data contains `]]>` are serialized by splitting the section
+ *   at each `]]>` occurrence (following W3C DOM Level 3 Core `split-cdata-sections`
+ *   default behaviour). A configurable option is not yet implemented.
+ *
+ * @param {Node} node
+ * @param {boolean} [isHtml]
+ * @param {function} [nodeFilter]
+ * @returns {string}
+ * @see https://html.spec.whatwg.org/#dom-xmlserializer-serializetostring
+ */
 XMLSerializer.prototype.serializeToString = function(node,isHtml,nodeFilter){
 	return nodeSerializeToString.call(node,isHtml,nodeFilter);
 }
@@ -62106,7 +62174,7 @@ function serializeToString(node,buf,isHTML,nodeFilter,visibleNamespaces){
 			.replace(/[<&>]/g,_xmlEncoder)
 		);
 	case CDATA_SECTION_NODE:
-		return buf.push( '<![CDATA[',node.data,']]>');
+		return buf.push('<![CDATA[', node.data.replace(/]]>/g, ']]]]><![CDATA[>'), ']]>');
 	case COMMENT_NODE:
 		return buf.push( "<!--",node.data,"-->");
 	case DOCUMENT_TYPE_NODE:
@@ -65090,7 +65158,7 @@ function parseDCC(source,start,domBuilder,errorHandler){//sure start with '<!'
 function parseInstruction(source,start,domBuilder){
 	var end = source.indexOf('?>',start);
 	if(end){
-		var match = source.substring(start,end).match(/^<\?(\S*)\s*([\s\S]*?)\s*$/);
+		var match = source.substring(start,end).match(/^<\?(\S*)\s*([\s\S]*?)$/);
 		if(match){
 			var len = match[0].length;
 			domBuilder.processingInstruction(match[1], match[2]) ;
@@ -80251,7 +80319,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.23';
+  var VERSION = '4.18.1';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -80259,7 +80327,8 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   /** Error message constants. */
   var CORE_ERROR_TEXT = 'Unsupported core-js use. Try https://npms.io/search?q=ponyfill.',
       FUNC_ERROR_TEXT = 'Expected a function',
-      INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`';
+      INVALID_TEMPL_VAR_ERROR_TEXT = 'Invalid `variable` option passed into `_.template`',
+      INVALID_TEMPL_IMPORTS_ERROR_TEXT = 'Invalid `imports` option passed into `_.template`';
 
   /** Used to stand-in for `undefined` hash values. */
   var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -81991,6 +82060,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * embedded Ruby (ERB) as well as ES2015 template strings. Change the
      * following template settings to use alternative delimiters.
      *
+     * **Security:** See
+     * [threat model](https://github.com/lodash/lodash/blob/main/threat-model.md)
+     * — `_.template` is insecure and will be removed in v5.
+     *
      * @static
      * @memberOf _
      * @type {Object}
@@ -82539,7 +82612,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * @name has
      * @memberOf SetCache
      * @param {*} value The value to search for.
-     * @returns {number} Returns `true` if `value` is found, else `false`.
+     * @returns {boolean} Returns `true` if `value` is found, else `false`.
      */
     function setCacheHas(value) {
       return this.__data__.has(value);
@@ -84610,7 +84683,9 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
     function baseUnset(object, path) {
       path = castPath(path, object);
 
-      // Prevent prototype pollution, see: https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg
+      // Prevent prototype pollution:
+      // https://github.com/lodash/lodash/security/advisories/GHSA-xxjr-mmjv-4gpg
+      // https://github.com/lodash/lodash/security/advisories/GHSA-f23m-r3pf-42rh
       var index = -1,
           length = path.length;
 
@@ -84618,32 +84693,17 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
         return true;
       }
 
-      var isRootPrimitive = object == null || (typeof object !== 'object' && typeof object !== 'function');
-
       while (++index < length) {
-        var key = path[index];
-
-        // skip non-string keys (e.g., Symbols, numbers)
-        if (typeof key !== 'string') {
-          continue;
-        }
+        var key = toKey(path[index]);
 
         // Always block "__proto__" anywhere in the path if it's not expected
         if (key === '__proto__' && !hasOwnProperty.call(object, '__proto__')) {
           return false;
         }
 
-        // Block "constructor.prototype" chains
-        if (key === 'constructor' &&
-            (index + 1) < length &&
-            typeof path[index + 1] === 'string' &&
-            path[index + 1] === 'prototype') {
-
-          // Allow ONLY when the path starts at a primitive root, e.g., _.unset(0, 'constructor.prototype.a')
-          if (isRootPrimitive && index === 0) {
-            continue;
-          }
-
+        // Block constructor/prototype as non-terminal traversal keys to prevent
+        // escaping the object graph into built-in constructors and prototypes.
+        if ((key === 'constructor' || key === 'prototype') && index < length - 1) {
           return false;
         }
       }
@@ -87200,7 +87260,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
     /**
      * Creates an array with all falsey values removed. The values `false`, `null`,
-     * `0`, `""`, `undefined`, and `NaN` are falsey.
+     * `0`, `-0`, `0n`, `""`, `undefined`, and `NaN` are falsy.
      *
      * @static
      * @memberOf _
@@ -87739,7 +87799,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
       while (++index < length) {
         var pair = pairs[index];
-        result[pair[0]] = pair[1];
+        baseAssignValue(result, pair[0], pair[1]);
       }
       return result;
     }
@@ -94399,6 +94459,8 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * **Note:** JavaScript follows the IEEE-754 standard for resolving
      * floating-point values which can produce unexpected results.
      *
+     * **Note:** If `lower` is greater than `upper`, the values are swapped.
+     *
      * @static
      * @memberOf _
      * @since 0.7.0
@@ -94412,8 +94474,15 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * _.random(0, 5);
      * // => an integer between 0 and 5
      *
+     * // when lower is greater than upper the values are swapped
+     * _.random(5, 0);
+     * // => an integer between 0 and 5
+     *
      * _.random(5);
      * // => also an integer between 0 and 5
+     *
+     * _.random(-5);
+     * // => an integer between -5 and 0
      *
      * _.random(5, true);
      * // => a floating-point number between 0 and 5
@@ -95016,6 +95085,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * properties may be accessed as free variables in the template. If a setting
      * object is given, it takes precedence over `_.templateSettings` values.
      *
+     * **Security:** `_.template` is insecure and should not be used. It will be
+     * removed in Lodash v5. Avoid untrusted input. See
+     * [threat model](https://github.com/lodash/lodash/blob/main/threat-model.md).
+     *
      * **Note:** In the development build `_.template` utilizes
      * [sourceURLs](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl)
      * for easier debugging.
@@ -95123,11 +95196,17 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
         options = undefined;
       }
       string = toString(string);
-      options = assignInWith({}, options, settings, customDefaultsAssignIn);
+      options = assignWith({}, options, settings, customDefaultsAssignIn);
 
-      var imports = assignInWith({}, options.imports, settings.imports, customDefaultsAssignIn),
+      var imports = assignWith({}, options.imports, settings.imports, customDefaultsAssignIn),
           importsKeys = keys(imports),
           importsValues = baseValues(imports, importsKeys);
+
+      arrayEach(importsKeys, function(key) {
+        if (reForbiddenIdentifierChars.test(key)) {
+          throw new Error(INVALID_TEMPL_IMPORTS_ERROR_TEXT);
+        }
+      });
 
       var isEscaping,
           isEvaluating,
