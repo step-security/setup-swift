@@ -1,13 +1,31 @@
 import * as core from '@actions/core'
+import * as fs from 'fs'
 import {ToolchainVersion, SWIFT_BRANCH_REGEX} from './version'
 import {Swiftorg} from './swiftorg'
 import {SdkSnapshot, ToolchainSnapshot} from './snapshot'
 import {Platform} from './platform'
-import * as github from '@actions/github'
+import {
+  INPUT_SWIFT_VERSION,
+  INPUT_CHECK_LATEST,
+  INPUT_DEVELOPMENT,
+  INPUT_DRY_RUN,
+  INPUT_SDKS,
+  OUTPUT_SWIFT_VERSION,
+  OUTPUT_TOOLCHAIN,
+  OUTPUT_SDKS
+} from './const'
+
 import axios, {isAxiosError} from 'axios'
 
 async function validateSubscription() {
-  const repoPrivate = github.context?.payload?.repository?.private
+  const eventPath = process.env.GITHUB_EVENT_PATH
+  let repoPrivate: boolean | undefined
+
+  if (eventPath && fs.existsSync(eventPath)) {
+    const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'))
+    repoPrivate = eventData?.repository?.private
+  }
+
   const upstream = 'SwiftyLab/setup-swift'
   const action = process.env.GITHUB_ACTION_REPOSITORY
   const docsUrl =
@@ -45,24 +63,25 @@ async function validateSubscription() {
     core.info('Timeout or API not reachable. Continuing to next step.')
   }
 }
+
 export async function run() {
   try {
     await validateSubscription()
-    const requestedVersion = core.getInput('swift-version') ?? 'latest'
-    const development = core.getBooleanInput('development')
-    const sdksStr = core.getInput('sdks')
+    const requestedVersion = core.getInput(INPUT_SWIFT_VERSION) ?? 'latest'
+    const development = core.getBooleanInput(INPUT_DEVELOPMENT)
+    const sdksStr = core.getInput(INPUT_SDKS)
     const sdks = sdksStr ? sdksStr.split(';') : []
     const version = ToolchainVersion.create(requestedVersion, development, sdks)
 
     if (version.requiresSwiftOrg) {
       core.startGroup('Syncing swift.org data')
-      const checkLatest = core.getInput('check-latest')
+      const checkLatest = core.getInput(INPUT_CHECK_LATEST)
       const submodule = new Swiftorg(checkLatest)
       await submodule.update()
       core.endGroup()
     }
 
-    const dryRun = core.getBooleanInput('dry-run')
+    const dryRun = core.getBooleanInput(INPUT_DRY_RUN)
     let snapshot: ToolchainSnapshot
     let sdkSnapshots: SdkSnapshot[]
     let installedVersion: string
@@ -79,16 +98,22 @@ export async function run() {
       } else {
         installedVersion = requestedVersion
       }
-      sdkSnapshots = await version.sdkSnapshots(toolchain)
+      sdkSnapshots = (await version.sdkSnapshots(toolchain)).map(snapshot => {
+        if (snapshot[0] == undefined) {
+          throw new Error(`Unable to find SDK for ${snapshot[1]}`)
+        }
+        return snapshot[0]
+      })
     } else {
       const {installer, sdkInstallers} = await Platform.install(version)
       snapshot = installer.data
       sdkSnapshots = sdkInstallers.map(installer => installer.data)
       installedVersion = await installer.installedSwiftVersion()
     }
-    core.setOutput('swift-version', installedVersion)
-    core.setOutput('toolchain', JSON.stringify(snapshot))
-    core.setOutput('sdks', JSON.stringify(sdkSnapshots))
+
+    core.setOutput(OUTPUT_SWIFT_VERSION, installedVersion)
+    core.setOutput(OUTPUT_TOOLCHAIN, JSON.stringify(snapshot))
+    core.setOutput(OUTPUT_SDKS, JSON.stringify(sdkSnapshots))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
