@@ -31,7 +31,7 @@
     "prepare": "node -e \"import('./.github/utils/update_metadata.js').then(m => m.fetch())\" && npm run build",
     "build": "tsc",
     "format": "prettier --write \"**/*.ts\"",
-    "lint": "depcheck --ignores ts-node,globals,@eslint/js,@eslint/eslintrc,@vitest/coverage-v8,conventional-changelog-conventionalcommits && eslint src/**/*.ts && prettier --check \"**/*.ts\"",
+    "lint": "depcheck --ignores ts-node,globals,@eslint/js,@eslint/eslintrc,@vitest/coverage-v8 && eslint src/**/*.ts && prettier --check \"**/*.ts\"",
     "package": "esbuild lib/main.js --bundle --platform=node --target=node20 --format=cjs --outfile=dist/index.cjs",
     "test": "vitest run --coverage",
     "all": "npm run format && npm run build && npm run lint && npm run package && npm run test"
