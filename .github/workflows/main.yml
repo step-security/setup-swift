@@ -59,7 +59,7 @@ jobs:
       group: integration-test-${{ github.ref }}-${{ matrix.os }}-${{ matrix.swift }}-${{ matrix.development }}-${{ matrix.vs-link }}-${{ matrix.latest-modules }}
       cancel-in-progress: true
     env:
-      SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.ci.outputs.check_latest) }}
+      SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -135,7 +135,7 @@ jobs:
         with:
           swift-version: ${{ matrix.swift }}
           development: ${{ matrix.development }}
-          check-latest: ${{ needs.ci.outputs.check_latest }}
+          check-latest: ${{ needs.unit-test.outputs.swiftorg_commit }}
           cache-snapshot: ${{ !matrix.development }}
           prefer-oss-toolchain: ${{ matrix.sdk != '' }}
           prefer-visual-studio-linker: ${{ runner.os == 'Windows' && matrix.vs-link }}
@@ -248,7 +248,7 @@ jobs:
         id: setup-swift
         uses: ./
         with:
-          check-latest: ${{ needs.unit-test.outputs.check_latest }}
+          check-latest: ${{ needs.unit-test.outputs.swiftorg_commit }}
           sdks: static-linux;wasm;android
           dry-run: true
 
@@ -282,8 +282,8 @@ jobs:
 
   e2e-test:
     name: End-to-end test latest Swift on ${{ matrix.os }}
-    if: needs.ci.outputs.run == 'true'
-    needs: ci
+    if: github.event_name != 'push'
+    needs: unit-test
     runs-on: ${{ matrix.os }}
     concurrency:
       group: e2e-test-${{ github.ref }}-${{ matrix.os }}
@@ -332,7 +332,7 @@ jobs:
                     uses: `${repo}@${branch}`,
                     with: {
                       'swift-version': 'latest',
-                      'check-latest': '${{ needs.ci.outputs.check_latest }}',
+                      'check-latest': '${{ needs.unit-test.outputs.swiftorg_commit }}',
                       'sdks': '${{ runner.os }}' != 'Windows' ? 'static-linux;wasm;android' : ''
                     }
                   }
