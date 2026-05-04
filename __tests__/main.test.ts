@@ -29,6 +29,7 @@ describe('setup-swift run validation', () => {
   }
   const sdkToolchains = [
     [
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       {
         name: 'Static SDK',
         date: new Date('2023-03-30 10:28:49.000000000 -05:00'),
