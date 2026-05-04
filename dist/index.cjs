@@ -190,7 +190,7 @@ var require_file_command = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.prepareKeyValueMessage = exports2.issueFileCommand = void 0;
     var crypto3 = __importStar2(require("crypto"));
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var os8 = __importStar2(require("os"));
     var utils_1 = require_utils();
     function issueFileCommand(command, message) {
@@ -198,10 +198,10 @@ var require_file_command = __commonJS({
       if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
       }
-      if (!fs16.existsSync(filePath)) {
+      if (!fs17.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs16.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os8.EOL}`, {
+      fs17.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os8.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -18518,12 +18518,12 @@ var require_io_util = __commonJS({
     var _a2;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var path27 = __importStar2(require("path"));
-    _a2 = fs16.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
+    _a2 = fs17.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     exports2.UV_FS_O_EXLOCK = 268435456;
-    exports2.READONLY = fs16.constants.O_RDONLY;
+    exports2.READONLY = fs17.constants.O_RDONLY;
     function exists2(fsPath) {
       return __awaiter6(this, void 0, void 0, function* () {
         try {
@@ -19748,10 +19748,10 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       (0, command_1.issueCommand)("error", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
     exports2.error = error5;
-    function warning7(message, properties = {}) {
+    function warning8(message, properties = {}) {
       (0, command_1.issueCommand)("warning", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.warning = warning7;
+    exports2.warning = warning8;
     function notice(message, properties = {}) {
       (0, command_1.issueCommand)("notice", (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
     }
@@ -27306,12 +27306,12 @@ var require_io_util2 = __commonJS({
     var _a2;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var path27 = __importStar2(require("path"));
-    _a2 = fs16.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
+    _a2 = fs17.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     exports2.UV_FS_O_EXLOCK = 268435456;
-    exports2.READONLY = fs16.constants.O_RDONLY;
+    exports2.READONLY = fs17.constants.O_RDONLY;
     function exists2(fsPath) {
       return __awaiter6(this, void 0, void 0, function* () {
         try {
@@ -28890,7 +28890,7 @@ var require_manifest = __commonJS({
     var core_1 = require_core();
     var os8 = require("os");
     var cp = require("child_process");
-    var fs16 = require("fs");
+    var fs17 = require("fs");
     function _findMatch(versionSpec, stable, candidates, archFilter) {
       return __awaiter6(this, void 0, void 0, function* () {
         const platFilter = os8.platform();
@@ -28954,10 +28954,10 @@ var require_manifest = __commonJS({
       const lsbReleaseFile = "/etc/lsb-release";
       const osReleaseFile = "/etc/os-release";
       let contents = "";
-      if (fs16.existsSync(lsbReleaseFile)) {
-        contents = fs16.readFileSync(lsbReleaseFile).toString();
-      } else if (fs16.existsSync(osReleaseFile)) {
-        contents = fs16.readFileSync(osReleaseFile).toString();
+      if (fs17.existsSync(lsbReleaseFile)) {
+        contents = fs17.readFileSync(lsbReleaseFile).toString();
+      } else if (fs17.existsSync(osReleaseFile)) {
+        contents = fs17.readFileSync(osReleaseFile).toString();
       }
       return contents;
     }
@@ -29725,7 +29725,7 @@ var require_tool_cache = __commonJS({
     var core26 = __importStar2(require_core());
     var io = __importStar2(require_io2());
     var crypto3 = __importStar2(require("crypto"));
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var mm = __importStar2(require_manifest());
     var os8 = __importStar2(require("os"));
     var path27 = __importStar2(require("path"));
@@ -29772,7 +29772,7 @@ var require_tool_cache = __commonJS({
     exports2.downloadTool = downloadTool5;
     function downloadToolAttempt(url2, dest, auth, headers) {
       return __awaiter6(this, void 0, void 0, function* () {
-        if (fs16.existsSync(dest)) {
+        if (fs17.existsSync(dest)) {
           throw new Error(`Destination file path ${dest} already exists`);
         }
         const http3 = new httpm.HttpClient(userAgent, [], {
@@ -29796,7 +29796,7 @@ var require_tool_cache = __commonJS({
         const readStream2 = responseMessageFactory();
         let succeeded = false;
         try {
-          yield pipeline(readStream2, fs16.createWriteStream(dest));
+          yield pipeline(readStream2, fs17.createWriteStream(dest));
           core26.debug("download complete");
           succeeded = true;
           return dest;
@@ -30008,11 +30008,11 @@ var require_tool_cache = __commonJS({
         arch3 = arch3 || os8.arch();
         core26.debug(`Caching tool ${tool} ${version} ${arch3}`);
         core26.debug(`source dir: ${sourceDir}`);
-        if (!fs16.statSync(sourceDir).isDirectory()) {
+        if (!fs17.statSync(sourceDir).isDirectory()) {
           throw new Error("sourceDir is not a directory");
         }
         const destPath = yield _createToolPath(tool, version, arch3);
-        for (const itemName of fs16.readdirSync(sourceDir)) {
+        for (const itemName of fs17.readdirSync(sourceDir)) {
           const s = path27.join(sourceDir, itemName);
           yield io.cp(s, destPath, { recursive: true });
         }
@@ -30027,7 +30027,7 @@ var require_tool_cache = __commonJS({
         arch3 = arch3 || os8.arch();
         core26.debug(`Caching tool ${tool} ${version} ${arch3}`);
         core26.debug(`source file: ${sourceFile}`);
-        if (!fs16.statSync(sourceFile).isFile()) {
+        if (!fs17.statSync(sourceFile).isFile()) {
           throw new Error("sourceFile is not a file");
         }
         const destFolder = yield _createToolPath(tool, version, arch3);
@@ -30057,7 +30057,7 @@ var require_tool_cache = __commonJS({
         versionSpec = semver3.clean(versionSpec) || "";
         const cachePath = path27.join(_getCacheDirectory(), toolName, versionSpec, arch3);
         core26.debug(`checking cache: ${cachePath}`);
-        if (fs16.existsSync(cachePath) && fs16.existsSync(`${cachePath}.complete`)) {
+        if (fs17.existsSync(cachePath) && fs17.existsSync(`${cachePath}.complete`)) {
           core26.debug(`Found tool in cache ${toolName} ${versionSpec} ${arch3}`);
           toolPath = cachePath;
         } else {
@@ -30071,12 +30071,12 @@ var require_tool_cache = __commonJS({
       const versions = [];
       arch3 = arch3 || os8.arch();
       const toolPath = path27.join(_getCacheDirectory(), toolName);
-      if (fs16.existsSync(toolPath)) {
-        const children2 = fs16.readdirSync(toolPath);
+      if (fs17.existsSync(toolPath)) {
+        const children2 = fs17.readdirSync(toolPath);
         for (const child2 of children2) {
           if (isExplicitVersion(child2)) {
             const fullPath = path27.join(toolPath, child2, arch3 || "");
-            if (fs16.existsSync(fullPath) && fs16.existsSync(`${fullPath}.complete`)) {
+            if (fs17.existsSync(fullPath) && fs17.existsSync(`${fullPath}.complete`)) {
               versions.push(child2);
             }
           }
@@ -30150,7 +30150,7 @@ var require_tool_cache = __commonJS({
     function _completeToolPath(tool, version, arch3) {
       const folderPath = path27.join(_getCacheDirectory(), tool, semver3.clean(version) || version, arch3 || "");
       const markerPath = `${folderPath}.complete`;
-      fs16.writeFileSync(markerPath, "");
+      fs17.writeFileSync(markerPath, "");
       core26.debug("finished caching tool");
     }
     function isExplicitVersion(versionSpec) {
@@ -32327,7 +32327,7 @@ var require_getos = __commonJS({
     init_();
     var async = require_async();
     var distros = require_os();
-    var fs16 = require("fs");
+    var fs17 = require("fs");
     var os8 = require("os");
     var cachedDistro = null;
     module2.exports = function getOs(cb) {
@@ -32341,7 +32341,7 @@ var require_getos = __commonJS({
         if (e) return cb(e);
         var candidates = distros[file];
         var os9 = { os: "linux", dist: candidates[0] };
-        fs16.readFile(file, "utf-8", function(e2, file2) {
+        fs17.readFile(file, "utf-8", function(e2, file2) {
           if (e2) return cb(e2);
           if (candidates.length === 1) {
             return customLogic(os9, getName(os9.dist), file2, function(e3, os10) {
@@ -32389,7 +32389,7 @@ var require_getos = __commonJS({
     function getReleaseFile(names, cb) {
       var index = 0;
       return function checkExists() {
-        fs16.stat(names[index], function(e, stat2) {
+        fs17.stat(names[index], function(e, stat2) {
           if (e || !stat2.isFile()) {
             index++;
             if (names.length <= index) {
@@ -32461,12 +32461,12 @@ var require_io_util3 = __commonJS({
     var _a2;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var path27 = __importStar2(require("path"));
-    _a2 = fs16.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
+    _a2 = fs17.promises, exports2.chmod = _a2.chmod, exports2.copyFile = _a2.copyFile, exports2.lstat = _a2.lstat, exports2.mkdir = _a2.mkdir, exports2.open = _a2.open, exports2.readdir = _a2.readdir, exports2.readlink = _a2.readlink, exports2.rename = _a2.rename, exports2.rm = _a2.rm, exports2.rmdir = _a2.rmdir, exports2.stat = _a2.stat, exports2.symlink = _a2.symlink, exports2.unlink = _a2.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     exports2.UV_FS_O_EXLOCK = 268435456;
-    exports2.READONLY = fs16.constants.O_RDONLY;
+    exports2.READONLY = fs17.constants.O_RDONLY;
     function exists2(fsPath) {
       return __awaiter6(this, void 0, void 0, function* () {
         try {
@@ -35020,7 +35020,7 @@ var require_internal_globber = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.DefaultGlobber = void 0;
     var core26 = __importStar2(require_core());
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var globOptionsHelper = __importStar2(require_internal_glob_options_helper());
     var path27 = __importStar2(require("path"));
     var patternHelper = __importStar2(require_internal_pattern_helper());
@@ -35072,7 +35072,7 @@ var require_internal_globber = __commonJS({
           for (const searchPath of patternHelper.getSearchPaths(patterns)) {
             core26.debug(`Search path '${searchPath}'`);
             try {
-              yield __await2(fs16.promises.lstat(searchPath));
+              yield __await2(fs17.promises.lstat(searchPath));
             } catch (err) {
               if (err.code === "ENOENT") {
                 continue;
@@ -35103,7 +35103,7 @@ var require_internal_globber = __commonJS({
                 continue;
               }
               const childLevel = item.level + 1;
-              const childItems = (yield __await2(fs16.promises.readdir(item.path))).map((x) => new internal_search_state_1.SearchState(path27.join(item.path, x), childLevel));
+              const childItems = (yield __await2(fs17.promises.readdir(item.path))).map((x) => new internal_search_state_1.SearchState(path27.join(item.path, x), childLevel));
               stack.push(...childItems.reverse());
             } else if (match2 & internal_match_kind_1.MatchKind.File) {
               yield yield __await2(item.path);
@@ -35138,7 +35138,7 @@ var require_internal_globber = __commonJS({
           let stats;
           if (options.followSymbolicLinks) {
             try {
-              stats = yield fs16.promises.stat(item.path);
+              stats = yield fs17.promises.stat(item.path);
             } catch (err) {
               if (err.code === "ENOENT") {
                 if (options.omitBrokenSymbolicLinks) {
@@ -35150,10 +35150,10 @@ var require_internal_globber = __commonJS({
               throw err;
             }
           } else {
-            stats = yield fs16.promises.lstat(item.path);
+            stats = yield fs17.promises.lstat(item.path);
           }
           if (stats.isDirectory() && options.followSymbolicLinks) {
-            const realPath = yield fs16.promises.realpath(item.path);
+            const realPath = yield fs17.promises.realpath(item.path);
             while (traversalChain.length >= item.level) {
               traversalChain.pop();
             }
@@ -36487,7 +36487,7 @@ var require_cacheUtils = __commonJS({
     var glob2 = __importStar2(require_glob());
     var io = __importStar2(require_io3());
     var crypto3 = __importStar2(require("crypto"));
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var path27 = __importStar2(require("path"));
     var semver3 = __importStar2(require_semver4());
     var util3 = __importStar2(require("util"));
@@ -36517,7 +36517,7 @@ var require_cacheUtils = __commonJS({
     }
     exports2.createTempDirectory = createTempDirectory;
     function getArchiveFileSizeInBytes(filePath) {
-      return fs16.statSync(filePath).size;
+      return fs17.statSync(filePath).size;
     }
     exports2.getArchiveFileSizeInBytes = getArchiveFileSizeInBytes;
     function resolvePaths(patterns) {
@@ -36557,7 +36557,7 @@ var require_cacheUtils = __commonJS({
     exports2.resolvePaths = resolvePaths;
     function unlinkFile(filePath) {
       return __awaiter6(this, void 0, void 0, function* () {
-        return util3.promisify(fs16.unlink)(filePath);
+        return util3.promisify(fs17.unlink)(filePath);
       });
     }
     exports2.unlinkFile = unlinkFile;
@@ -36602,7 +36602,7 @@ var require_cacheUtils = __commonJS({
     exports2.getCacheFileName = getCacheFileName;
     function getGnuTarPathOnWindows() {
       return __awaiter6(this, void 0, void 0, function* () {
-        if (fs16.existsSync(constants_1.GnuTarPathOnWindows)) {
+        if (fs17.existsSync(constants_1.GnuTarPathOnWindows)) {
           return constants_1.GnuTarPathOnWindows;
         }
         const versionOutput = yield getVersion("tar");
@@ -41826,11 +41826,11 @@ var require_checkInsecureConnection = __commonJS({
       return false;
     }
     function emitInsecureConnectionWarning() {
-      const warning7 = "Sending token over insecure transport. Assume any token issued is compromised.";
-      import_log.logger.warning(warning7);
+      const warning8 = "Sending token over insecure transport. Assume any token issued is compromised.";
+      import_log.logger.warning(warning8);
       if (typeof process?.emitWarning === "function" && !insecureConnectionWarningEmmitted) {
         insecureConnectionWarningEmmitted = true;
-        process.emitWarning(warning7);
+        process.emitWarning(warning8);
       }
     }
     function ensureSecureConnection(request, options) {
@@ -78068,7 +78068,7 @@ var require_downloadUtils = __commonJS({
     var http_client_1 = require_lib();
     var storage_blob_1 = require_commonjs14();
     var buffer = __importStar2(require("buffer"));
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var stream5 = __importStar2(require("stream"));
     var util3 = __importStar2(require("util"));
     var utils = __importStar2(require_cacheUtils());
@@ -78179,7 +78179,7 @@ var require_downloadUtils = __commonJS({
     exports2.DownloadProgress = DownloadProgress;
     function downloadCacheHttpClient(archiveLocation, archivePath) {
       return __awaiter6(this, void 0, void 0, function* () {
-        const writeStream = fs16.createWriteStream(archivePath);
+        const writeStream = fs17.createWriteStream(archivePath);
         const httpClient = new http_client_1.HttpClient("actions/cache");
         const downloadResponse = yield (0, requestUtils_1.retryHttpClientResponse)("downloadCache", () => __awaiter6(this, void 0, void 0, function* () {
           return httpClient.get(archiveLocation);
@@ -78205,7 +78205,7 @@ var require_downloadUtils = __commonJS({
     function downloadCacheHttpClientConcurrent(archiveLocation, archivePath, options) {
       var _a2;
       return __awaiter6(this, void 0, void 0, function* () {
-        const archiveDescriptor = yield fs16.promises.open(archivePath, "w");
+        const archiveDescriptor = yield fs17.promises.open(archivePath, "w");
         const httpClient = new http_client_1.HttpClient("actions/cache", void 0, {
           socketTimeout: options.timeoutInMs,
           keepAlive: true
@@ -78322,7 +78322,7 @@ var require_downloadUtils = __commonJS({
         } else {
           const maxSegmentSize = Math.min(134217728, buffer.constants.MAX_LENGTH);
           const downloadProgress = new DownloadProgress(contentLength);
-          const fd = fs16.openSync(archivePath, "w");
+          const fd = fs17.openSync(archivePath, "w");
           try {
             downloadProgress.startDisplayTimer();
             const controller = new abort_controller_1.AbortController();
@@ -78340,12 +78340,12 @@ var require_downloadUtils = __commonJS({
                 controller.abort();
                 throw new Error("Aborting cache download as the download time exceeded the timeout.");
               } else if (Buffer.isBuffer(result)) {
-                fs16.writeFileSync(fd, result);
+                fs17.writeFileSync(fd, result);
               }
             }
           } finally {
             downloadProgress.stopDisplayTimer();
-            fs16.closeSync(fd);
+            fs17.closeSync(fd);
           }
         }
       });
@@ -78644,7 +78644,7 @@ var require_cacheHttpClient = __commonJS({
     var core26 = __importStar2(require_core());
     var http_client_1 = require_lib();
     var auth_1 = require_auth();
-    var fs16 = __importStar2(require("fs"));
+    var fs17 = __importStar2(require("fs"));
     var url_1 = require("url");
     var utils = __importStar2(require_cacheUtils());
     var uploadUtils_1 = require_uploadUtils();
@@ -78782,7 +78782,7 @@ Other caches with similar key:`);
       return __awaiter6(this, void 0, void 0, function* () {
         const fileSize = utils.getArchiveFileSizeInBytes(archivePath);
         const resourceUrl = getCacheApiUrl(`caches/${cacheId.toString()}`);
-        const fd = fs16.openSync(archivePath, "r");
+        const fd = fs17.openSync(archivePath, "r");
         const uploadOptions = (0, options_1.getUploadOptions)(options);
         const concurrency = utils.assertDefined("uploadConcurrency", uploadOptions.uploadConcurrency);
         const maxChunkSize = utils.assertDefined("uploadChunkSize", uploadOptions.uploadChunkSize);
@@ -78796,7 +78796,7 @@ Other caches with similar key:`);
               const start = offset;
               const end = offset + chunkSize - 1;
               offset += maxChunkSize;
-              yield uploadChunk(httpClient, resourceUrl, () => fs16.createReadStream(archivePath, {
+              yield uploadChunk(httpClient, resourceUrl, () => fs17.createReadStream(archivePath, {
                 fd,
                 start,
                 end,
@@ -78807,7 +78807,7 @@ Other caches with similar key:`);
             }
           })));
         } finally {
-          fs16.closeSync(fd);
+          fs17.closeSync(fd);
         }
         return;
       });
@@ -103774,7 +103774,7 @@ var require_form_data = __commonJS({
     var http3 = require("http");
     var https4 = require("https");
     var parseUrl2 = require("url").parse;
-    var fs16 = require("fs");
+    var fs17 = require("fs");
     var Stream2 = require("stream").Stream;
     var crypto3 = require("crypto");
     var mime = require_mime_types();
@@ -103841,7 +103841,7 @@ var require_form_data = __commonJS({
         if (value.end != void 0 && value.end != Infinity && value.start != void 0) {
           callback(null, value.end + 1 - (value.start ? value.start : 0));
         } else {
-          fs16.stat(value.path, function(err, stat2) {
+          fs17.stat(value.path, function(err, stat2) {
             if (err) {
               callback(err);
               return;
@@ -104621,7 +104621,7 @@ __export(main_exports, {
 });
 module.exports = __toCommonJS(main_exports);
 var core25 = __toESM(require_core(), 1);
-var fs15 = __toESM(require("fs"), 1);
+var fs16 = __toESM(require("fs"), 1);
 
 // lib/version/index.js
 var import_url2 = require("url");
@@ -109812,8 +109812,8 @@ var PathScurryBase = class {
    *
    * @internal
    */
-  constructor(cwd = process.cwd(), pathImpl, sep3, { nocase, childrenCacheSize = 16 * 1024, fs: fs16 = defaultFS } = {}) {
-    this.#fs = fsFromOption(fs16);
+  constructor(cwd = process.cwd(), pathImpl, sep3, { nocase, childrenCacheSize = 16 * 1024, fs: fs17 = defaultFS } = {}) {
+    this.#fs = fsFromOption(fs17);
     if (cwd instanceof URL || cwd.startsWith("file://")) {
       cwd = (0, import_node_url.fileURLToPath)(cwd);
     }
@@ -110371,8 +110371,8 @@ var PathScurryWin32 = class extends PathScurryBase {
   /**
    * @internal
    */
-  newRoot(fs16) {
-    return new PathWin32(this.rootPath, IFDIR, void 0, this.roots, this.nocase, this.childrenCache(), { fs: fs16 });
+  newRoot(fs17) {
+    return new PathWin32(this.rootPath, IFDIR, void 0, this.roots, this.nocase, this.childrenCache(), { fs: fs17 });
   }
   /**
    * Return true if the provided path string is an absolute path
@@ -110400,8 +110400,8 @@ var PathScurryPosix = class extends PathScurryBase {
   /**
    * @internal
    */
-  newRoot(fs16) {
-    return new PathPosix(this.rootPath, IFDIR, void 0, this.roots, this.nocase, this.childrenCache(), { fs: fs16 });
+  newRoot(fs17) {
+    return new PathPosix(this.rootPath, IFDIR, void 0, this.roots, this.nocase, this.childrenCache(), { fs: fs17 });
   }
   /**
    * Return true if the provided path string is an absolute path
@@ -115282,9 +115282,22 @@ ToolchainVersion.create = (requested, dev = false, sdks) => {
 
 // lib/swiftorg.js
 var path9 = __toESM(require("path"), 1);
+var fs4 = __toESM(require("fs/promises"), 1);
 var core6 = __toESM(require_core(), 1);
 var https = __toESM(require("https"), 1);
-var Swiftorg = class {
+var swiftorgContractVersion = void 0;
+async function getSwiftorgContractVersion() {
+  if (swiftorgContractVersion !== void 0) {
+    return await swiftorgContractVersion;
+  }
+  swiftorgContractVersion = (async () => {
+    const data = await fs4.readFile(path9.join(MODULE_DIR, "package.json"), "utf8");
+    const packageJson = JSON.parse(data);
+    return packageJson["swiftorg-contract-version"];
+  })();
+  return swiftorgContractVersion;
+}
+var Swiftorg = class _Swiftorg {
   checkLatest;
   constructor(checkLatest) {
     this.checkLatest = checkLatest;
@@ -115305,11 +115318,19 @@ var Swiftorg = class {
       this.checkLatest = false;
     }
   }
+  static async commitFromMetadata(metadata) {
+    const version = await getSwiftorgContractVersion();
+    if (!version) {
+      return metadata.commit;
+    }
+    return metadata.commits?.[version] ?? metadata.commit;
+  }
   async swiftorgMetadata() {
     if (process.env.SETUPSWIFT_SWIFTORG_METADATA) {
       const metadata = JSON.parse(process.env.SETUPSWIFT_SWIFTORG_METADATA);
-      if (metadata.commit) {
-        return metadata;
+      const commit = await _Swiftorg.commitFromMetadata(metadata);
+      if (commit) {
+        return { commit };
       }
     }
     return new Promise((resolve2, reject) => {
@@ -115336,8 +115357,8 @@ var Swiftorg = class {
         res.on("end", () => {
           try {
             const parsedData = JSON.parse(rawData);
-            core6.debug(`Recieved swift.org metadata: "${rawData}"`);
-            resolve2(parsedData);
+            core6.debug(`Received swift.org metadata: "${rawData}"`);
+            _Swiftorg.commitFromMetadata(parsedData).then((commit) => resolve2({ commit }), (e) => reject(e));
           } catch (e) {
             core6.error(`Parsing swift.org metadata error: '${e}'`);
             reject(e);
@@ -115884,7 +115905,7 @@ VisualStudio.setup = async function(requirement) {
     const vsConfig = JSON.parse(configContent);
     const installedComponents = new Set(vsConfig.components);
     comps = comps.filter((comp) => !installedComponents.has(comp));
-    if (comps.length == 0) {
+    if (!comps.length) {
       core13.debug("VS components already setup, skipping installation");
       this.shared = vs;
       return vs;
@@ -116020,11 +116041,32 @@ async function secondDirectoryLayout(root) {
   core15.debug("Second installation approach succeeded");
   return new Installation(location, toolchain, sdkroot, runtime);
 }
+async function thirdDirectoryLayout(version, root) {
+  core15.debug("Trying third installation approach");
+  let location;
+  if (root) {
+    location = root;
+  } else {
+    const localAppData = process.env.LOCALAPPDATA;
+    if (!localAppData) {
+      throw new Error("LOCALAPPDATA environment variable not set");
+    }
+    location = path18.join(localAppData, "Programs", "Swift");
+  }
+  const toolchainName = `${version}+Asserts`;
+  const toolchain = path18.join(location, "Toolchains", toolchainName);
+  await import_fs10.promises.access(toolchain);
+  const winsdk = path18.join("Developer", "SDKs", "Windows.sdk");
+  const sdkroot = path18.join(location, "Platforms", version, "Windows.platform", winsdk);
+  const runtime = path18.join(location, "Runtimes", version);
+  core15.debug("Third installation approach succeeded");
+  return new Installation(location, toolchain, sdkroot, runtime);
+}
 
 // lib/installer/windows/installation/fallback.js
 var path19 = __toESM(require("path"), 1);
 var core16 = __toESM(require_core(), 1);
-function comapareEnvironment(oldJSON, newJSON) {
+function compareEnvironment(oldJSON, newJSON) {
   const difference = {};
   let newPaths = [];
   let before;
@@ -116059,11 +116101,11 @@ async function env() {
   }, Promise.resolve({}));
 }
 async function fallback(oldEnv, newEnv) {
-  core16.debug("Procceding with fallback installation approach");
+  core16.warning("Proceeding with fallback installation approach");
   const data = Object.entries(newEnv).reduce((previous, current) => {
     return {
       ...previous,
-      ...comapareEnvironment(oldEnv[current[0]], current[1])
+      ...compareEnvironment(oldEnv[current[0]], current[1])
     };
   }, {});
   core16.debug(`Setting up environment with "${JSON.stringify(data)}"`);
@@ -116077,11 +116119,12 @@ async function fallback(oldEnv, newEnv) {
 }
 
 // lib/installer/windows/installation/index.js
-Installation.get = async function(install) {
-  if (!(install?.length ?? 1)) {
+Installation.get = async function(version, install) {
+  if (install?.length === 0) {
     return this.lastInstallation;
   }
   const approaches = [
+    async () => thirdDirectoryLayout(version, install),
     async () => secondDirectoryLayout(install),
     async () => firstDirectoryLayout(install)
   ];
@@ -116102,16 +116145,16 @@ Installation.get = async function(install) {
   }
   return void 0;
 };
-Installation.install = async function(exe) {
+Installation.install = async function(exe, version) {
   core17.debug(`Installing toolchain from "${exe}"`);
   const oldEnv = await env();
   await exec(`"${exe}"`, ["-q"]);
   const newEnv = await env();
-  this.lastInstallation = await Installation.detect(oldEnv, newEnv);
+  this.lastInstallation = await Installation.detect(oldEnv, newEnv, version);
   return this.lastInstallation;
 };
-Installation.detect = async (oldEnv, newEnv) => {
-  const installation = await Installation.get();
+Installation.detect = async (oldEnv, newEnv, version) => {
+  const installation = await Installation.get(version);
   if (!installation) {
     return fallback(oldEnv, newEnv);
   }
@@ -116203,7 +116246,7 @@ async function updateSdkModules(sdkRoot) {
                 rawData += chunk;
               });
               res.on("end", () => {
-                core18.debug(`Recieved ${name} module definition: "${rawData}"`);
+                core18.debug(`Received ${name} module definition: "${rawData}"`);
                 resolve2(rawData);
               });
             });
@@ -116234,15 +116277,15 @@ var WindowsToolchainInstaller = class extends VerifyingToolchainInstaller {
     const recommended = semver2.gte(this.version ?? "6.2.0", "6.2.0") ? win11Semver : "10.0.17763";
     const current = os6.release();
     let version = semver2.gte(current, recommended) ? current : recommended;
-    const insatlled = await this.insatlledSdks();
-    if (insatlled.length && !insatlled.includes(version)) {
-      version = insatlled[0];
+    const installed = await this.installedSdks();
+    if (installed.length && !installed.includes(version)) {
+      version = installed[0];
     }
     const major2 = semver2.lt(version, win11Semver) ? semver2.major(version) : 11;
     const minor = semver2.patch(version);
     return `Microsoft.VisualStudio.Component.Windows${major2}SDK.${minor}`;
   }
-  async insatlledSdks() {
+  async installedSdks() {
     const sdksPath = path21.join(program86(), "Windows Kits", "10", "Include");
     try {
       const dirs = await import_fs12.promises.readdir(sdksPath, { withFileTypes: true });
@@ -116286,7 +116329,7 @@ var WindowsToolchainInstaller = class extends VerifyingToolchainInstaller {
     };
   }
   async download(arch3) {
-    let vsSetupAction = new Promise((resolve2) => resolve2({}));
+    let vsSetupAction = Promise.resolve({});
     const vsComponents = core19.getInput(INPUT_VISUAL_STUDIO_COMPONENTS);
     if (vsComponents.length || core19.getBooleanInput(INPUT_PREFER_VISUAL_STUDIO_LINKER)) {
       core19.debug(`Using VS requirement ${JSON.stringify(this.vsRequirement(arch3))}`);
@@ -116303,15 +116346,17 @@ var WindowsToolchainInstaller = class extends VerifyingToolchainInstaller {
   }
   async unpack(exe, arch3) {
     core19.debug(`Unpacking for architecture "${arch3}"`);
-    const installation = await Installation.install(exe);
+    const version = this.version?.version ?? "";
+    const installation = await Installation.install(exe, version);
     return installation instanceof Installation ? installation.location : "";
   }
   async add(installLocation, arch3) {
-    const installation = await Installation.get(installLocation);
+    const swiftVersion = this.version?.version ?? "";
+    const installation = await Installation.get(swiftVersion, installLocation);
     const sdkrootKey = "SDKROOT";
     let sdkroot;
     if (installation instanceof Installation) {
-      sdkroot = installation?.sdkroot ?? core19;
+      sdkroot = installation?.sdkroot;
       core19.exportVariable(sdkrootKey, sdkroot);
       if (installation.devdir) {
         core19.exportVariable("DEVELOPER_DIR", installation.devdir);
@@ -116337,7 +116382,7 @@ var WindowsToolchainInstaller = class extends VerifyingToolchainInstaller {
       sdkroot = installation.variables[sdkrootKey];
     }
     if (!sdkroot) {
-      core19.warning(`Failed VS enviroment after installation ${installLocation}`);
+      core19.warning(`SDKROOT was not set after installation at ${installLocation}; Visual Studio/Swift environment setup cannot continue and the installation may be unusable.`);
       return;
     }
     const version = await this.installedSwiftVersion();
@@ -120806,8 +120851,8 @@ var {
 async function validateSubscription() {
   const eventPath = process.env.GITHUB_EVENT_PATH;
   let repoPrivate;
-  if (eventPath && fs15.existsSync(eventPath)) {
-    const eventData = JSON.parse(fs15.readFileSync(eventPath, "utf8"));
+  if (eventPath && fs16.existsSync(eventPath)) {
+    const eventData = JSON.parse(fs16.readFileSync(eventPath, "utf8"));
     repoPrivate = eventData?.repository?.private;
   }
   const upstream = "SwiftyLab/setup-swift";
