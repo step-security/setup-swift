@@ -4,23 +4,23 @@ on:
   workflow_dispatch:
     inputs:
       base_branch:
-        description: 'Base branch to create the PR against'
+        description: "Base branch to create the PR against"
         required: true
-        default: 'main'
+        default: "main"
       mode:
-        description: 'Run mode: cherry-pick or verify'
+        description: "Run mode: cherry-pick or verify"
         required: false
-        default: 'cherry-pick'
+        default: "cherry-pick"
       script:
-        description: 'Specify the build script to run'
+        description: "Specify the build script to run"
         required: true
         type: string
-        default: 'npm run build && npm run package'
+        default: "npm run build && npm run package"
       node_version:
-        description: 'Specify Node.js version'
+        description: "Specify Node.js version"
         required: false
         type: string
-        default: '24'
+        default: "24"
 
   pull_request:
     types: [opened, synchronize, labeled]
@@ -36,9 +36,10 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || contains(fromJson(toJson(github.event.pull_request.labels)).*.name, 'review-required')
     uses: step-security/reusable-workflows/.github/workflows/auto_cherry_pick.yaml@v1
     with:
-      original-owner: 'SwiftyLab'
-      repo-name: 'setup-swift'
+      original-owner: "SwiftyLab"
+      repo-name: "setup-swift"
       base_branch: ${{ inputs.base_branch }}
       mode: ${{ github.event_name == 'pull_request' && 'verify' || inputs.mode }}
       script: ${{ inputs.script || 'npm run build && npm run package' }}
       node_version: ${{ inputs.node_version || '24' }}
+
