@@ -5,7 +5,6 @@
 [![Supports macOS, Linux & Windows](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue?label=platform)](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources)
 [![CI/CD](https://github.com/step-security/setup-swift/actions/workflows/main.yml/badge.svg)](https://github.com/step-security/setup-swift/actions/workflows/main.yml)
 
-
 [GitHub Action](https://github.com/features/actions) that will setup [Swift](https://swift.org) environment with specified version.
 This action supports the following functionalities:
 
@@ -21,11 +20,11 @@ This action supports the following functionalities:
 
 ## Latest supported toolchains
 
-| Release Type | Latest Available |
-|--------------|------------------|
-| Stable | [![Latest Release](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%step-security.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.release.name&logo=swift&logoColor=white&label=Swift&color=orange)](https://www.swift.org/download/#releases)<br/>[![Latest Release Tag](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%step-security.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.release.tag&logo=swift&logoColor=white&label=tag&color=orange)](https://www.swift.org/download/#releases) |
-| Development | [![Latest Development Snapshot](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.dev.name&logo=swift&logoColor=white&label=Swift&color=orange)](https://www.swift.org/download/#snapshots)<br/>[![Latest Development Snapshot Tag](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%step-security.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.dev.tag&logo=swift&logoColor=white&label=tag&color=orange)](https://www.swift.org/download/#snapshots)<br/>[![Latest Development Snapshot Date](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%step-security.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.dev.date&logo=swift&logoColor=white&label=date)](https://www.swift.org/download/#snapshots) |
-| Trunk Development | [![Latest Trunk Development Snapshot Tag](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%step-security.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.snapshot.tag&logo=swift&logoColor=white&label=tag&color=orange)](https://www.swift.org/download/#snapshots)<br/>[![Latest Trunk Development Snapshot Date](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%step-security.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.snapshot.date&logo=swift&logoColor=white&label=date)](https://www.swift.org/download/#snapshots) |
+| Release Type      | Latest Available                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stable            | [![Latest Release](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.release.name&logo=swift&logoColor=white&label=Swift&color=orange)](https://www.swift.org/download/#releases)<br/>[![Latest Release Tag](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.release.tag&logo=swift&logoColor=white&label=tag&color=orange)](https://www.swift.org/download/#releases)                                                                                                                                                                                                                                                                                  |
+| Development       | [![Latest Development Snapshot](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.dev.name&logo=swift&logoColor=white&label=Swift&color=orange)](https://www.swift.org/download/#snapshots)<br/>[![Latest Development Snapshot Tag](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.dev.tag&logo=swift&logoColor=white&label=tag&color=orange)](https://www.swift.org/download/#snapshots)<br/>[![Latest Development Snapshot Date](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.dev.date&logo=swift&logoColor=white&label=date)](https://www.swift.org/download/#snapshots) |
+| Trunk Development | [![Latest Trunk Development Snapshot Tag](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.snapshot.tag&logo=swift&logoColor=white&label=tag&color=orange)](https://www.swift.org/download/#snapshots)<br/>[![Latest Trunk Development Snapshot Date](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fswiftylab.github.io%2Fsetup-swift%2Fmetadata.json&query=%24.snapshot.date&logo=swift&logoColor=white&label=date)](https://www.swift.org/download/#snapshots)                                                                                                                                                                                                                                                 |
 
 ## Usage
 
@@ -67,7 +66,7 @@ A specific Swift version can be set using the `swift-version` input, [see the fo
 ```yml
 - uses: step-security/setup-swift@v1
   with:
-    swift-version: "5.1.0"
+    swift-version: '5.1.0'
 - name: Get swift version
   run: swift --version # Swift 5.1.0
 - name: Get swift version in macOS
@@ -83,13 +82,13 @@ runs-on: ${{ matrix.os }}
 strategy:
   matrix:
     os: [ubuntu-latest, macos-latest]
-    swift: ["5.4.3", "5.2.4"]
+    swift: ['5.4.3', '5.2.4']
 steps:
-- uses: step-security/setup-swift@v1
-  with:
-    swift-version: ${{ matrix.swift }}
-- name: Get swift version
-  run: swift --version
+  - uses: step-security/setup-swift@v1
+    with:
+      swift-version: ${{ matrix.swift }}
+  - name: Get swift version
+    run: swift --version
 ```
 
 **See [action.yml](action.yml) for complete list of inputs and outputs.**
@@ -110,11 +109,12 @@ In other words specifying...
 <details>
   <summary>Additionally, to use custom toolchains, download URL can be provided. The download URL must point to a `tar` archive for `Linux`, `pkg` file for `macOS` and `exe` file for `Windows`.</summary>
 
-  i.e. for `macOS`: https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-macos_x86_64.pkg
-  for `Linux`: https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-ubuntu22.04_x86_64.tar.gz
+i.e. for `macOS`: https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-macos_x86_64.pkg
+for `Linux`: https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-ubuntu22.04_x86_64.tar.gz
 
-  > [!IMPORTANT]
-  > When using custom toolchains, please ensure that the toolchain can be installed and used on the GitHub runner, this action won't be able to validate this for custom toolchains.
+> [!IMPORTANT]
+> When using custom toolchains, please ensure that the toolchain can be installed and used on the GitHub runner, this action won't be able to validate this for custom toolchains.
+
 </details>
 
 ### Caveats
