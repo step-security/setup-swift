@@ -1,10 +1,8 @@
 import * as path from 'path'
-import * as fs from 'fs'
 import * as core from '@actions/core'
 import {exec} from '@actions/exec'
-import {MODULE_DIR, SWIFTORG_ORIGIN, SWIFTORG_METADATA} from './const'
-
-export const SWIFTORG = 'swiftorg'
+import {MODULE_DIR, SWIFTORG, SWIFTORG_ORIGIN, SWIFTORG_METADATA} from './const'
+import * as https from 'https'
 
 export class Swiftorg {
   constructor(readonly checkLatest: boolean | string) {
@@ -33,10 +31,42 @@ export class Swiftorg {
         return metadata
       }
     }
-    const rawData = fs.readFileSync(SWIFTORG_METADATA, 'utf8')
-    const parsedData = JSON.parse(rawData)
-    core.debug(`Read swift.org metadata: "${rawData}"`)
-    return parsedData
+    return new Promise((resolve, reject) => {
+      https.get(SWIFTORG_METADATA, res => {
+        const {statusCode} = res
+        const contentType = res.headers['content-type']
+
+        let error
+        if (statusCode !== 200) {
+          error = new Error(`Request Failed Status Code: '${statusCode}'`)
+        } else if (!contentType?.startsWith('application/json')) {
+          error = new Error(`Invalid content-type: '${contentType}'`)
+        }
+
+        if (error) {
+          core.error(error.message)
+          res.resume()
+          reject(error)
+          return
+        }
+
+        let rawData = ''
+        res.setEncoding('utf8')
+        res.on('data', chunk => {
+          rawData += chunk
+        })
+        res.on('end', () => {
+          try {
+            const parsedData = JSON.parse(rawData)
+            core.debug(`Recieved swift.org metadata: "${rawData}"`)
+            resolve(parsedData)
+          } catch (e) {
+            core.error(`Parsing swift.org metadata error: '${e}'`)
+            reject(e)
+          }
+        })
+      })
+    })
   }
 
   async update() {

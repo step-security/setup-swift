@@ -19,18 +19,23 @@ jobs:
       SETUPSWIFT_SWIFTORG_METADATA: '{"commit":"HEAD"}'
 
     steps:
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+      with:
+        egress-policy: audit
+
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
         cache: npm
 
     - name: Cache dependencies
-      uses: actions/cache@v5
+      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
-        key: node-${{ github.ref }}
+        key: node-${{ runner.os }}-${{ runner.arch }}-${{ github.ref }}
         path: node_modules
 
     - name: Clone swift-org-website
@@ -106,18 +111,23 @@ jobs:
           sdk-checksum: 67f765e0030e661a7450f7e4877cfe008db4f57f177d5a08a6e26fd661cdd0bd
 
     steps:
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+      with:
+        egress-policy: audit
+
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
         cache: npm
 
     - name: Cache dependencies
-      uses: actions/cache@v5
+      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
-        key: node-${{ github.ref }}
+        key: node-${{ runner.os }}-${{ runner.arch }}-${{ github.ref }}
         path: node_modules
 
     - name: Setup and Build
@@ -162,7 +172,7 @@ jobs:
     - name: Get cached installation
       id: get-tool
       if: failure()
-      uses: actions/github-script@v8
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       with:
         script: |
           const os = require('os');
@@ -203,7 +213,7 @@ jobs:
 
     - name: Upload cached installation as artifact
       if: always() && steps.get-tool.outputs.result != ''
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: ${{ fromJson(steps.get-tool.outputs.result).key }}-${{ matrix.os }}-tool
         path: ${{ fromJson(steps.get-tool.outputs.result).tool }}
@@ -221,18 +231,23 @@ jobs:
       SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
 
     steps:
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+      with:
+        egress-policy: audit
+
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
         cache: npm
 
     - name: Cache dependencies
-      uses: actions/cache@v5
+      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
-        key: node-${{ github.ref }}
+        key: node-${{ runner.os }}-${{ runner.arch }}-${{ github.ref }}
         path: node_modules
 
     - name: Setup and Build
@@ -249,7 +264,7 @@ jobs:
         dry-run: true
 
     - name: Verify Swift version
-      uses: addnab/docker-run-action@v3
+      uses: addnab/docker-run-action@4f65fabd2431ebc8d299f8e5a018d79a769ae185 # v3
       with:
         image: swift:${{ fromJSON(steps.setup-swift.outputs.toolchain).docker }}
         run: swift --version | grep ${{ steps.setup-swift.outputs.swift-version }} || exit 1
@@ -268,8 +283,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest, ubuntu-24.04-arm, windows-11-arm]
     steps:
+    - name: Harden the runner (Audit all outbound calls)
+      uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+      with:
+        egress-policy: audit
+
     - name: Setup wrapper composite action at ${{ env.COMPOSITE }}
-      uses: actions/github-script@v8
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       with:
         script: |
           const path = require('path');
@@ -316,7 +336,7 @@ jobs:
 
     - name: Cleanup
       if: always()
-      uses: actions/github-script@v8
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
       continue-on-error: true
       with:
         script: await io.rmRF('${{ env.COMPOSITE }}');
@@ -348,20 +368,25 @@ jobs:
     env:
       SETUPSWIFT_SWIFTORG_METADATA: ${{ format('{{"commit":"{0}"}}', needs.unit-test.outputs.swiftorg_commit) }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@58077d3c7e43986b6b15fba718e8ea69e387dfcc # v2.15.1
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.repository.default_branch }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           cache: npm
 
       - name: Cache dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
-          key: node-${{ github.ref }}
+          key: node-${{ runner.os }}-${{ runner.arch }}-${{ github.ref }}
           path: node_modules
 
       - name: Clone swift-org-website at tested commit
@@ -374,14 +399,14 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Generate swift.org metadata
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
-            const hook = require('.github/utils/update_metadata.js');
+            const hook = await import('${{ github.workspace }}/.github/utils/update_metadata.js');
             await hook.update();
 
       - name: Create Pull Request
-        uses: step-security/create-pull-request@v8
+        uses: step-security/create-pull-request@e604d57b37b404d8bb34d152fa905e45d003a895 # v8.1.0
         with:
           add-paths: metadata.json
           commit-message: 'feat: Update metadata.json'
