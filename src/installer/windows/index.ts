@@ -23,9 +23,9 @@ export class WindowsToolchainInstaller extends VerifyingToolchainInstaller<Windo
       : '10.0.17763'
     const current = os.release()
     let version = semver.gte(current, recommended) ? current : recommended
-    const insatlled = await this.insatlledSdks()
-    if (insatlled.length && !insatlled.includes(version)) {
-      version = insatlled[0]
+    const installed = await this.installedSdks()
+    if (installed.length && !installed.includes(version)) {
+      version = installed[0]
     }
 
     const major = semver.lt(version, win11Semver) ? semver.major(version) : 11
@@ -33,7 +33,7 @@ export class WindowsToolchainInstaller extends VerifyingToolchainInstaller<Windo
     return `Microsoft.VisualStudio.Component.Windows${major}SDK.${minor}`
   }
 
-  private async insatlledSdks() {
+  private async installedSdks() {
     const sdksPath = path.join(program86(), 'Windows Kits', '10', 'Include')
     try {
       const dirs = await fs.readdir(sdksPath, {withFileTypes: true})
@@ -87,7 +87,7 @@ export class WindowsToolchainInstaller extends VerifyingToolchainInstaller<Windo
   }
 
   protected async download(arch: string) {
-    let vsSetupAction = new Promise(resolve => resolve({}))
+    let vsSetupAction = Promise.resolve({})
     const vsComponents = core.getInput(INPUT_VISUAL_STUDIO_COMPONENTS)
     if (
       vsComponents.length ||
@@ -112,16 +112,18 @@ export class WindowsToolchainInstaller extends VerifyingToolchainInstaller<Windo
 
   protected async unpack(exe: string, arch: string) {
     core.debug(`Unpacking for architecture "${arch}"`)
-    const installation = await Installation.install(exe)
+    const version = this.version?.version ?? ''
+    const installation = await Installation.install(exe, version)
     return installation instanceof Installation ? installation.location : ''
   }
 
   protected async add(installLocation: string, arch: string) {
-    const installation = await Installation.get(installLocation)
+    const swiftVersion = this.version?.version ?? ''
+    const installation = await Installation.get(swiftVersion, installLocation)
     const sdkrootKey = 'SDKROOT'
     let sdkroot: string | undefined
     if (installation instanceof Installation) {
-      sdkroot = installation?.sdkroot ?? core
+      sdkroot = installation?.sdkroot
       core.exportVariable(sdkrootKey, sdkroot)
       if (installation.devdir) {
         core.exportVariable('DEVELOPER_DIR', installation.devdir)
@@ -150,7 +152,9 @@ export class WindowsToolchainInstaller extends VerifyingToolchainInstaller<Windo
     }
 
     if (!sdkroot) {
-      core.warning(`Failed VS enviroment after installation ${installLocation}`)
+      core.warning(
+        `SDKROOT was not set after installation at ${installLocation}; Visual Studio/Swift environment setup cannot continue and the installation may be unusable.`
+      )
       return
     }
 

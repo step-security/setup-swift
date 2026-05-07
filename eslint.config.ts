@@ -1,19 +1,20 @@
-import vitest from "eslint-plugin-vitest"
-import typescriptEslint from "@typescript-eslint/eslint-plugin"
-import stylistic from "@stylistic/eslint-plugin"
-import globals from "globals"
-import tsParser from "@typescript-eslint/parser"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import js from "@eslint/js"
-import { FlatCompat } from "@eslint/eslintrc"
+import vitest from '@vitest/eslint-plugin'
+import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import stylistic from '@stylistic/eslint-plugin'
+import globals from 'globals'
+import tsParser from '@typescript-eslint/parser'
+import path from 'node:path'
+import {fileURLToPath} from 'node:url'
+import js from '@eslint/js'
+import {FlatCompat} from '@eslint/eslintrc'
+import type {ESLint, Linter} from 'eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all
 })
 
 export default [
@@ -21,7 +22,7 @@ export default [
   {
     plugins: {
       vitest,
-      '@typescript-eslint': typescriptEslint,
+      '@typescript-eslint': typescriptEslint as unknown as ESLint.Plugin,
       '@stylistic': stylistic
     },
 
@@ -36,10 +37,7 @@ export default [
       sourceType: 'module',
 
       parserOptions: {
-        project: [
-          './tsconfig.base.json',
-          './tsconfig.json'
-        ]
+        project: ['./tsconfig.json', './tsconfig.lint.json']
       }
     },
 
@@ -90,7 +88,27 @@ export default [
       '@stylistic/semi': ['error', 'never'],
       '@stylistic/type-annotation-spacing': 'error',
       '@typescript-eslint/unbound-method': 'error'
+    }
+  },
+  {
+    ignores: ['dist/', 'lib/', 'node_modules/', 'swiftorg/', 'coverage/']
+  },
+  {
+    files: ['.github/changelog/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      parserOptions: {
+        program: null,
+        project: false,
+        projectService: false
+      }
     },
-    ignores: ['dist/', 'lib/', 'node_modules/', 'swiftorg/']
+    rules: {
+      ...(typescriptEslint.configs as Record<string, Linter.Config>)[
+        'flat/disable-type-checked'
+      ].rules,
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off'
+    }
   }
-]
+] satisfies Linter.Config[]

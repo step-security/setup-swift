@@ -1,1 +1,83 @@
-{"commit":"0b94516bb72cc10fb08d74f8ec2f27fae75c2de3","release":{"name":"6.2.4","tag":"swift-6.2.4-RELEASE","xcode":"Xcode 26.3","xcode_release":true,"date":"2025-02-26T00:00:00.000Z","platforms":[{"name":"Ubuntu 22.04","platform":"Linux","docker":"6.2.4-jammy","archs":["x86_64","aarch64"]},{"name":"Ubuntu 24.04","platform":"Linux","docker":"6.2.4-noble","archs":["x86_64","aarch64"]},{"name":"Debian 12","platform":"Linux","docker":"6.2.4-bookworm","archs":["x86_64","aarch64"]},{"name":"Fedora 39","platform":"Linux","docker":"6.2.4-fedora39","archs":["x86_64","aarch64"]},{"name":"Fedora 41","platform":"Linux","docker":"6.2.4-fedora41","archs":["x86_64","aarch64"]},{"name":"Amazon Linux 2","platform":"Linux","docker":"6.2.4-amazonlinux2","archs":["x86_64","aarch64"]},{"name":"Red Hat Universal Base Image 9","platform":"Linux","docker":"6.2.4-rhel-ubi9","dir":"ubi9","archs":["x86_64","aarch64"]},{"name":"Windows 10","platform":"Windows","docker":"6.2.4-windowsservercore-ltsc2022","archs":["x86_64","arm64"]},{"name":"Static SDK","platform":"static-sdk","version":"0.1.0","checksum":"24bdf84495dd31a6de2eb679647c1982b747bfbfe1a2060c779d84dcecd902a4","archs":["x86_64","arm64"]},{"name":"Wasm SDK","platform":"wasm-sdk","checksum":"32fdb8772d73bb174f77b5c59bc88a0d55003d75712832129394d3465158fb43","archs":["x86_64","arm64"]}]},"dev":{"name":"6.3","date":"2026-03-05T16:10:00.000Z","tag":"swift-6.3-DEVELOPMENT-SNAPSHOT-2026-03-05-a"},"snapshot":{"date":"2026-03-09T16:10:00.000Z","tag":"swift-DEVELOPMENT-SNAPSHOT-2026-03-09-a"}}
+{
+  "commit": "0b94516bb72cc10fb08d74f8ec2f27fae75c2de3",
+  "release": {
+    "name": "6.2.4",
+    "tag": "swift-6.2.4-RELEASE",
+    "xcode": "Xcode 26.3",
+    "xcode_release": true,
+    "date": "2025-02-26T00:00:00.000Z",
+    "platforms": [
+      {
+        "name": "Ubuntu 22.04",
+        "platform": "Linux",
+        "docker": "6.2.4-jammy",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Ubuntu 24.04",
+        "platform": "Linux",
+        "docker": "6.2.4-noble",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Debian 12",
+        "platform": "Linux",
+        "docker": "6.2.4-bookworm",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Fedora 39",
+        "platform": "Linux",
+        "docker": "6.2.4-fedora39",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Fedora 41",
+        "platform": "Linux",
+        "docker": "6.2.4-fedora41",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Amazon Linux 2",
+        "platform": "Linux",
+        "docker": "6.2.4-amazonlinux2",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Red Hat Universal Base Image 9",
+        "platform": "Linux",
+        "docker": "6.2.4-rhel-ubi9",
+        "dir": "ubi9",
+        "archs": ["x86_64", "aarch64"]
+      },
+      {
+        "name": "Windows 10",
+        "platform": "Windows",
+        "docker": "6.2.4-windowsservercore-ltsc2022",
+        "archs": ["x86_64", "arm64"]
+      },
+      {
+        "name": "Static SDK",
+        "platform": "static-sdk",
+        "version": "0.1.0",
+        "checksum": "24bdf84495dd31a6de2eb679647c1982b747bfbfe1a2060c779d84dcecd902a4",
+        "archs": ["x86_64", "arm64"]
+      },
+      {
+        "name": "Wasm SDK",
+        "platform": "wasm-sdk",
+        "checksum": "32fdb8772d73bb174f77b5c59bc88a0d55003d75712832129394d3465158fb43",
+        "archs": ["x86_64", "arm64"]
+      }
+    ]
+  },
+  "dev": {
+    "name": "6.3",
+    "date": "2026-03-05T16:10:00.000Z",
+    "tag": "swift-6.3-DEVELOPMENT-SNAPSHOT-2026-03-05-a"
+  },
+  "snapshot": {
+    "date": "2026-03-09T16:10:00.000Z",
+    "tag": "swift-DEVELOPMENT-SNAPSHOT-2026-03-09-a"
+  }
+}

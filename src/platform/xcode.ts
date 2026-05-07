@@ -44,6 +44,7 @@ export class XcodePlatform extends Platform<XcodeToolchainInstaller> {
       .filter(release => version.satisfiedBy(release))
       .map(release => {
         const xMatch = /Xcode\s+(.*)/.exec(release.xcode)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         return {
           name: `Xcode Swift ${release.name}`,
           date: release.date,

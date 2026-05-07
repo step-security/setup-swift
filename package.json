@@ -1,24 +1,8 @@
 {
   "name": "setup-swift",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "private": true,
-  "type": "module",
   "description": "Setup Swift environment.",
-  "main": "lib/main.js",
-  "author": "step-security",
-  "license": "MIT",
-  "homepage": "https://github.com/step-security/setup-swift#readme",
-  "engines": {
-    "node": ">=24.0.0",
-    "npm": ">=8.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/step-security/setup-swift.git"
-  },
-  "bugs": {
-    "url": "https://github.com/step-security/setup-swift/issues"
-  },
   "keywords": [
     "swift",
     "setup",
@@ -27,21 +11,33 @@
     "github-actions",
     "ci"
   ],
+  "homepage": "https://github.com/step-security/setup-swift#readme",
+  "bugs": {
+    "url": "https://github.com/step-security/setup-swift/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/step-security/setup-swift.git"
+  },
+  "license": "MIT",
+  "author": "step-security",
+  "type": "module",
+  "main": "lib/main.js",
   "scripts": {
-    "prepare": "node -e \"import('./.github/utils/update_metadata.js').then(m => m.fetch())\" && npm run build",
+    "all": "npm run format && npm run build && npm run lint && npm run package && npm run test",
     "build": "tsc",
-    "format": "prettier --write \"**/*.ts\"",
-    "lint": "depcheck --ignores ts-node,globals,@eslint/js,@eslint/eslintrc,@vitest/coverage-v8 && eslint src/**/*.ts && prettier --check \"**/*.ts\"",
-    "package": "esbuild lib/main.js --bundle --platform=node --target=node20 --format=cjs --outfile=dist/index.cjs",
-    "test": "vitest run --coverage",
-    "all": "npm run format && npm run build && npm run lint && npm run package && npm run test"
+    "format": "sort-package-json && prettier --write .",
+    "lint": "depcheck --ignores @vitest/coverage-istanbul && eslint && prettier --check .",
+    "package": "esbuild lib/main.js --bundle --platform=node --target=node24 --format=esm --banner:js=\"import{createRequire}from'module';import{fileURLToPath}from'url';import{dirname}from'path';const require=createRequire(import.meta.url);const __filename=fileURLToPath(import.meta.url);const __dirname=dirname(__filename);\" --outfile=dist/index.js",
+    "prepare": "node --import jiti/register -e \"import('./.github/utils/update_metadata.ts').then(m => (m.default?.fetch ?? m.fetch)())\" && npm run build",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@actions/cache": "^4.1.0",
-    "@actions/core": "^1.11.1",
+    "@actions/cache": "^6.0.0",
+    "@actions/core": "^3.0.0",
     "@actions/exec": "^3.0.0",
     "@actions/io": "^3.0.2",
-    "@actions/tool-cache": "^2.0.2",
+    "@actions/tool-cache": "^4.0.0",
     "axios": "^1.13.6",
     "getos": "^3.2.1",
     "glob": "^13.0.0",
@@ -51,23 +47,32 @@
     "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^5.7.1",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.9.0",
     "@types/getos": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.23",
     "@types/plist": "^3.0.5",
     "@types/semver": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^8.53.0",
-    "@typescript-eslint/parser": "^8.54.0",
-    "@vitest/coverage-v8": "^4.1.1",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "@vitest/coverage-istanbul": "^4.1.4",
+    "@vitest/eslint-plugin": "^1.6.14",
     "depcheck": "^1.4.7",
     "esbuild": "0.27.4",
-    "eslint": "^9.35.0",
-    "eslint-plugin-vitest": "^0.5.4",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0",
+    "jiti": "^2.6.1",
     "nock": "^14.0.10",
     "prettier": "^3.8.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3",
+    "sort-package-json": "^3.6.1",
+    "typescript": "^6.0.2",
     "vitest": "^4.1.1"
-  }
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=8.0.0"
+  },
+  "swiftorg-contract-version": "1"
 }
