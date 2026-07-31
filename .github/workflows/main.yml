@@ -442,8 +442,9 @@ jobs:
         uses: step-security/create-pull-request@e604d57b37b404d8bb34d152fa905e45d003a895 # v8.1.0
         with:
           add-paths: metadata.json
-          commit-message: Update metadata.json
+          commit-message: 'feat: Update metadata.json'
           branch: update-metadata
           base: ${{ github.event.repository.default_branch }}
           title: Update metadata.json
           body: Automated update of swift.org metadata.
+          sign-commits: true
