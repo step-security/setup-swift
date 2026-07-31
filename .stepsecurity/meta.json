@@ -1,0 +1,18 @@
+{
+   "schema_version": "1",
+   "onboarding_type": "copied",
+   "archived": false,
+   "maintained_action_name": "step-security/setup-swift",
+   "upstream_full_repo_name": "swiftylab/setup-swift",
+   "action_type": "node",
+   "last_release": {
+     "tag_name": "v1.14.0",
+     "created_at": "2026-05-07T03:44:38Z",
+     "published_at": "2026-05-08T21:23:43Z"
+   },
+   "sync": {
+     "ignore_presets": [
+       "defaults_v1"
+     ]
+   }
+ }
