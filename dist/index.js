@@ -63937,16 +63937,21 @@ function requireLoader() {
       state3.result += _result;
     }
   }
+  function chargeMergeWork(state3) {
+    state3.totalMergeKeys++;
+    if (state3.maxTotalMergeKeys !== -1 && state3.totalMergeKeys > state3.maxTotalMergeKeys) {
+      throwError(state3, "merge keys exceeded maxTotalMergeKeys (" + state3.maxTotalMergeKeys + ")");
+    }
+  }
   function mergeMappings(state3, destination, source, overridableKeys) {
     if (!common2.isObject(source)) {
       throwError(state3, "cannot merge mappings; the provided source object is unacceptable");
     }
+    chargeMergeWork(state3);
     const sourceKeys = Object.keys(source);
     for (let index = 0, quantity = sourceKeys.length; index < quantity; index += 1) {
       const key = sourceKeys[index];
-      if (state3.maxTotalMergeKeys !== -1 && ++state3.totalMergeKeys > state3.maxTotalMergeKeys) {
-        throwError(state3, "merge keys exceeded maxTotalMergeKeys (" + state3.maxTotalMergeKeys + ")");
-      }
+      chargeMergeWork(state3);
       if (!_hasOwnProperty.call(destination, key)) {
         setProperty(destination, key, source[key]);
         overridableKeys[key] = true;
@@ -63974,6 +63979,9 @@ function requireLoader() {
     }
     if (keyTag === "tag:yaml.org,2002:merge") {
       if (Array.isArray(valueNode)) {
+        if (valueNode.length > 100) {
+          throwError(state3, "abnormal merge sequence size");
+        }
         for (let index = 0, quantity = valueNode.length; index < quantity; index += 1) {
           mergeMappings(state3, _result, valueNode[index], overridableKeys);
         }
