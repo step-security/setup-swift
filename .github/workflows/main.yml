@@ -101,7 +101,7 @@ jobs:
             vs-link: false
             latest-modules: false
           - os: ubuntu-22.04
-            swift: ${{ fromJSON(vars.SETUPSWIFT_CUSTOM_TOOLCHAINS).ubuntu2204 }} # custom toolchain
+            swift: ${{ fromJSON(vars.SETUPSWIFT_CUSTOM_TOOLCHAINS || '{"ubuntu2204":"https://github.com/swiftwasm/swift/releases/download/swift-wasm-5.10-SNAPSHOT-2024-03-30-a/swift-wasm-5.10-SNAPSHOT-2024-03-30-a-ubuntu22.04_x86_64.tar.gz"}').ubuntu2204 }} # custom toolchain
             development: true
           - os: macos-14
             swift: '6.0.3'
@@ -140,6 +140,7 @@ jobs:
           prefer-oss-toolchain: ${{ matrix.sdk != '' }}
           prefer-visual-studio-linker: ${{ runner.os == 'Windows' && matrix.vs-link }}
           update-sdk-modules: ${{ runner.os == 'Windows' && matrix.latest-modules }}
+          skip-linux-install-dependencies: true
 
       - name: Verify Swift version in macos
         if: runner.os == 'macOS'
@@ -173,8 +174,8 @@ jobs:
             const os = require('os');
             const path = require('path');
             const fs = require('fs/promises');
-            const toolCache = require('@actions/tool-cache');
-            const {exec: actionExec} = require('@actions/exec');
+            const toolCache = await import('@actions/tool-cache');
+            const {exec: actionExec} = await import('@actions/exec');
             let arch = '';
             switch (os.arch()) {
               case 'x64':
@@ -276,7 +277,9 @@ jobs:
           image: swift:${{ fromJSON(steps.setup-swift.outputs.toolchain).docker }}
           shell: bash
           run: |
-            swift --version | grep ${{ steps.setup-swift.outputs.swift-version }} || exit 1
+            # a x.y.0 release reports itself as x.y, so treat the .0 as optional
+            SWIFT_VERSION="${{ steps.setup-swift.outputs.swift-version }}"
+            swift --version | grep -E "${SWIFT_VERSION%.0}(\.0)?" || exit 1
             swift -print-target-info || exit 0
             ${{ steps.gen-sdk-install.outputs.command }}
 
@@ -314,6 +317,9 @@ jobs:
               outputs: {
                 'swift-version': {
                   value: '$' + `{{ steps.run.outputs.swift-version }}`
+                },
+                'toolchain': {
+                  value: '$' + `{{ steps.run.outputs.toolchain }}`
                 }
               },
               runs: {
@@ -366,11 +372,16 @@ jobs:
 
       - name: Verify Swift SDKs
         if: runner.os != 'Windows'
+        env:
+          SWIFT_TOOLCHAIN: ${{ steps.setup-swift.outputs.toolchain }}
         run: |
+          # SDK bundles are named after the release tag, which can differ from
+          # the version `swift --version` reports, i.e. swift-6.4.0-RELEASE vs 6.4
+          SWIFT_TAG=$(echo "$SWIFT_TOOLCHAIN" | jq -er .dir)
           SWIFT_SDK_LIST=$(swift sdk list)
-          echo "$SWIFT_SDK_LIST" | grep ${{ steps.setup-swift.outputs.swift-version }}-RELEASE_static-linux || exit 1
-          echo "$SWIFT_SDK_LIST" | grep ${{ steps.setup-swift.outputs.swift-version }}-RELEASE_wasm || exit 1
-          echo "$SWIFT_SDK_LIST" | grep ${{ steps.setup-swift.outputs.swift-version }}-RELEASE_android || exit 1
+          echo "$SWIFT_SDK_LIST" | grep "${SWIFT_TAG}_static-linux" || exit 1
+          echo "$SWIFT_SDK_LIST" | grep "${SWIFT_TAG}_wasm" || exit 1
+          echo "$SWIFT_SDK_LIST" | grep "${SWIFT_TAG}_android" || exit 1
 
       - name: Test Swift package
         run: |
@@ -378,11 +389,15 @@ jobs:
           swift build --build-tests
           swift test
 
-      - name: Test Swift package for SDKs
+      - name: Test Swift package for static Linux SDK
         if: runner.os != 'Windows'
-        run: |
-          swift build --swift-sdk aarch64-swift-linux-musl
-          swift build --swift-sdk aarch64-unknown-linux-android28 --static-swift-stdlib
+        run: swift build --swift-sdk aarch64-swift-linux-musl
+
+      - name: Test Swift package for Android SDK
+        # the Android SDK bundle only ships linux-x86_64 host NDK tools, so the
+        # NDK linker can't be executed on an aarch64 Linux host
+        if: runner.os != 'Windows' && !(runner.os == 'Linux' && runner.arch == 'ARM64')
+        run: swift build --swift-sdk aarch64-unknown-linux-android28 --static-swift-stdlib
 
   update-metadata:
     name: Update metadata.json

@@ -91,7 +91,10 @@ describe('linux toolchain installation verification', () => {
       vi.spyOn(core, 'getBooleanInput').mockReturnValue(true)
       vi.spyOn(cache, 'restoreCache').mockResolvedValue(undefined)
       vi.spyOn(toolCache, 'find').mockReturnValue('')
-      vi.spyOn(fs, 'cp').mockResolvedValue()
+      const cpSpy = vi.spyOn(fs, 'cp').mockResolvedValue()
+      const renameSpy = vi.spyOn(fs, 'rename').mockResolvedValue()
+      vi.spyOn(fs, 'rm').mockResolvedValue()
+      vi.spyOn(fs, 'mkdir').mockResolvedValue('')
       const downloadSpy = vi.spyOn(toolCache, 'downloadTool')
       downloadSpy.mockResolvedValue(download)
       const extractSpy = vi.spyOn(toolCache, 'extractTar')
@@ -115,11 +118,16 @@ describe('linux toolchain installation verification', () => {
       const actionCacheKey = `${toolCacheKey}-${arch}`
       const toolDir = path.basename(toolchain.download, '.tar.gz')
       const cachedTool = path.join(extracted, toolDir)
+      const tmpDir = process.env.RUNNER_TEMP || os.tmpdir()
+      const restore = path.join(tmpDir, 'setup-swift', toolCacheKey)
       expect(toolCacheSpy.mock.calls[0]?.[0]).toBe(cachedTool)
       expect(toolCacheSpy.mock.calls[0]?.[1]).toBe(toolCacheKey)
       expect(toolCacheSpy.mock.calls[0]?.[2]).toBe('5.8.0')
       expect(toolCacheSpy.mock.calls[0]?.[3]).toBe(arch)
       expect(actionCacheSpy.mock.calls[0]?.[1]).toBe(actionCacheKey)
+      // The unpacked toolchain is moved to the cache restore path, not copied.
+      expect(renameSpy).toHaveBeenCalledWith(cachedTool, restore)
+      expect(cpSpy).not.toHaveBeenCalled()
     }
   )
 
@@ -147,6 +155,58 @@ describe('linux toolchain installation verification', () => {
     for (const spy of [downloadSpy, extractSpy, actionCacheSpy]) {
       expect(spy).not.toHaveBeenCalled()
     }
+  })
+
+  it('tests dependencies installed on action cache restore', async () => {
+    const installer = new LinuxToolchainInstaller(toolchain)
+    const cached = path.resolve('tool', 'cached', 'path')
+    vi.spyOn(toolCache, 'find').mockReturnValue('')
+    vi.spyOn(cache, 'restoreCache').mockResolvedValue(cached)
+    vi.spyOn(core, 'getBooleanInput').mockImplementation(
+      name => name !== 'skip-linux-install-dependencies'
+    )
+    vi.spyOn(toolCache, 'cacheDir').mockResolvedValue(cached)
+    vi.spyOn(fs, 'access').mockResolvedValue()
+    const readFileSpy = vi
+      .spyOn(fs, 'readFile')
+      .mockResolvedValue('<pre>\n$ sudo apt-get install libncurses-dev\n</pre>')
+    const execSpy = vi.spyOn(exec, 'exec').mockResolvedValue(0)
+    const downloadSpy = vi.spyOn(toolCache, 'downloadTool')
+    try {
+      await installer.install('aarch64', false)
+    } finally {
+      readFileSpy.mockRestore()
+    }
+    expect(downloadSpy).not.toHaveBeenCalled()
+    const installed = execSpy.mock.calls.some(
+      ([cmd, args]) => cmd === 'sudo' && !!args?.includes('libncurses-dev')
+    )
+    expect(installed).toBeTruthy()
+  })
+
+  it('tests dependencies skipped when skip-linux-install-dependencies enabled', async () => {
+    const installer = new LinuxToolchainInstaller(toolchain)
+    const cached = path.resolve('tool', 'cached', 'path')
+    vi.spyOn(toolCache, 'find').mockReturnValue('')
+    vi.spyOn(cache, 'restoreCache').mockResolvedValue(cached)
+    vi.spyOn(core, 'getBooleanInput').mockImplementation(
+      name => name === 'skip-linux-install-dependencies'
+    )
+    vi.spyOn(toolCache, 'cacheDir').mockResolvedValue(cached)
+    vi.spyOn(fs, 'access').mockResolvedValue()
+    const readFileSpy = vi
+      .spyOn(fs, 'readFile')
+      .mockResolvedValue('<pre>\n$ sudo apt-get install libncurses-dev\n</pre>')
+    const execSpy = vi.spyOn(exec, 'exec').mockResolvedValue(0)
+    try {
+      await installer.install('aarch64', false)
+    } finally {
+      readFileSpy.mockRestore()
+    }
+    const installed = execSpy.mock.calls.some(
+      ([cmd, args]) => cmd === 'sudo' && !!args?.includes('libncurses-dev')
+    )
+    expect(installed).toBeFalsy()
   })
 
   it('tests installation with tool cache', async () => {
@@ -233,6 +293,9 @@ describe('linux toolchain installation verification', () => {
     vi.spyOn(cache, 'restoreCache').mockResolvedValue(undefined)
     vi.spyOn(toolCache, 'find').mockReturnValue('')
     vi.spyOn(fs, 'cp').mockResolvedValue()
+    vi.spyOn(fs, 'rename').mockResolvedValue()
+    vi.spyOn(fs, 'rm').mockResolvedValue()
+    vi.spyOn(fs, 'mkdir').mockResolvedValue('')
     vi.spyOn(fs, 'access').mockResolvedValue()
     vi.spyOn(toolCache, 'downloadTool').mockResolvedValue(download)
     vi.spyOn(toolCache, 'extractTar').mockResolvedValue(extracted)

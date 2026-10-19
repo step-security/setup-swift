@@ -151,3 +151,6 @@ out
 
 # swift.org
 swiftorg
+
+# Source archive from `npm run source-zip`
+build/
