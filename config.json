@@ -1,0 +1,17 @@
+{
+  "$comment": "Managed automatically when syncing with upstream. Do not edit by hand.",
+  "schema_version": 1,
+  "onboarding_type": "copied",
+  "action_type": "node",
+  "upstream": {
+    "repository": "SwiftyLab/setup-swift",
+    "synced_tag": "v1.14.2",
+    "synced_commit": "d60245579ea3836a3f2fa65ebbe1e8891d577c76",
+    "archived": false
+  },
+  "build": {
+    "package_manager": "npm@11.19.0",
+    "node_version": "24",
+    "script": "package"
+  }
+}

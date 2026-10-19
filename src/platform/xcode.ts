@@ -55,7 +55,7 @@ export class XcodePlatform extends Platform<XcodeToolchainInstaller> {
           platform: this.name,
           branch: release.tag.toLocaleLowerCase(),
           preventCaching: false
-        } as XcodeToolchainSnapshot
+        }
       })
   }
 

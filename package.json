@@ -1,6 +1,6 @@
 {
-  "name": "setup-swift",
-  "version": "1.14.0",
+  "name": "@step-security/setup-swift",
+  "version": "1.14.2",
   "private": true,
   "description": "Setup Swift environment.",
   "keywords": [
@@ -21,6 +21,7 @@
   },
   "license": "MIT",
   "author": "step-security",
+  "publisher": "step-security",
   "type": "module",
   "main": "lib/main.js",
   "scripts": {
@@ -30,49 +31,51 @@
     "lint": "depcheck --ignores @vitest/coverage-istanbul && eslint && prettier --check .",
     "package": "esbuild lib/main.js --bundle --platform=node --target=node24 --format=esm --banner:js=\"import{createRequire}from'module';import{fileURLToPath}from'url';import{dirname}from'path';const require=createRequire(import.meta.url);const __filename=fileURLToPath(import.meta.url);const __dirname=dirname(__filename);\" --outfile=dist/index.js",
     "prepare": "node --import jiti/register -e \"import('./.github/utils/update_metadata.ts').then(m => (m.default?.fetch ?? m.fetch)())\" && npm run build",
+    "source-zip": "mkdir -p build && rm -f build/setup-swift-source.zip && tmp=$(mktemp -d) && git init -q --bare \"$tmp\" && git -c core.quotePath=false --git-dir=\"$tmp\" --work-tree=. ls-files -o --exclude-standard | grep -vxF build/setup-swift-source.zip | zip -q -X -@ build/setup-swift-source.zip; s=$?; rm -rf \"$tmp\"; [ $s -eq 0 ] && echo \"Wrote build/setup-swift-source.zip ($(du -h build/setup-swift-source.zip | cut -f1))\"; exit $s",
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@actions/cache": "^6.0.0",
-    "@actions/core": "^3.0.0",
+    "@actions/cache": "^6.2.0",
+    "@actions/core": "^3.0.1",
     "@actions/exec": "^3.0.0",
     "@actions/io": "^3.0.2",
     "@actions/tool-cache": "^4.0.0",
-    "axios": "^1.13.6",
+    "axios": "^1.20.0",
     "getos": "^3.2.1",
-    "glob": "^13.0.0",
-    "js-yaml": "^4.1.1",
-    "lodash": "^4.17.23",
-    "plist": "^3.1.0",
-    "semver": "^7.7.4"
+    "glob": "^13.0.6",
+    "js-yaml": "^5.2.2",
+    "lodash": "^4.18.1",
+    "plist": "^5.0.0",
+    "semver": "^7.8.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",
-    "@stylistic/eslint-plugin": "^5.9.0",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/getos": "^3.0.4",
     "@types/js-yaml": "^4.0.9",
-    "@types/lodash": "^4.17.23",
+    "@types/lodash": "^4.17.25",
+    "@types/node": "^26.6.3",
     "@types/plist": "^3.0.5",
     "@types/semver": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^8.56.0",
-    "@typescript-eslint/parser": "^8.58.0",
-    "@vitest/coverage-istanbul": "^4.1.4",
-    "@vitest/eslint-plugin": "^1.6.14",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.70.1",
+    "@vitest/coverage-istanbul": "^4.1.9",
+    "@vitest/eslint-plugin": "^1.6.20",
     "depcheck": "^1.4.7",
-    "esbuild": "0.27.4",
-    "eslint": "^10.1.0",
-    "globals": "^17.4.0",
-    "jiti": "^2.6.1",
-    "nock": "^14.0.10",
-    "prettier": "^3.8.1",
-    "sort-package-json": "^3.6.1",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.1"
+    "esbuild": "0.28.1",
+    "eslint": "^10.11.0",
+    "globals": "^17.11.0",
+    "jiti": "^2.7.0",
+    "nock": "^14.0.16",
+    "prettier": "^3.9.4",
+    "sort-package-json": "^4.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   },
   "engines": {
-    "node": ">=24.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=24",
+    "npm": ">=11"
   },
   "swiftorg-contract-version": "1"
 }
